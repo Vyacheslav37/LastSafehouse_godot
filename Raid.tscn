@@ -1,0 +1,48 @@
+[gd_scene load_steps=5 format=3 uid="uid://7vr6kwpocvl4"]
+
+[ext_resource type="Texture2D" uid="uid://cs8vihtjgy83v" path="res://images/zombie1.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://icc2gihcj1wh" path="res://images/background_rade.png" id="2_hpdnl"]
+[ext_resource type="Texture2D" uid="uid://oefdromxm2ax" path="res://images/zombie2.png" id="3"]
+[ext_resource type="Script" uid="uid://cwrr2vs7o055b" path="res://Raid.gd" id="4"]
+
+[node name="Raid" type="Node2D"]
+script = ExtResource("4")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("2_hpdnl")
+centered = false
+
+[node name="Zombie1" type="Sprite2D" parent="."]
+z_index = 1
+position = Vector2(1029, 546)
+texture = ExtResource("2")
+
+[node name="Zombie2" type="Sprite2D" parent="."]
+z_index = 1
+position = Vector2(816, 494)
+texture = ExtResource("3")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ZombieLabel" type="Label" parent="CanvasLayer"]
+offset_left = 20.0
+offset_top = 20.0
+text = "Зомби: 0"
+
+[node name="AmmoLabel" type="Label" parent="CanvasLayer"]
+offset_left = 20.0
+offset_top = 60.0
+text = "Боеприпасы: 0"
+
+[node name="AttackButton" type="Button" parent="CanvasLayer"]
+offset_left = 20.0
+offset_top = 120.0
+text = "АТАКОВАТЬ"
+
+[node name="RetreatButton" type="Button" parent="CanvasLayer"]
+offset_left = 20.0
+offset_top = 180.0
+text = "ОТСТУПИТЬ"
+
+[connection signal="pressed" from="CanvasLayer/AttackButton" to="." method="_on_attack_pressed"]
+[connection signal="pressed" from="CanvasLayer/RetreatButton" to="." method="_on_retreat_pressed"]
