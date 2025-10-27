@@ -119,63 +119,67 @@ script = ExtResource("1")
 
 [node name="RaidShape" type="CollisionShape2D" parent="Raid/RaidArea"]
 position = Vector2(0.916382, -7.03882)
-scale = Vector2(1, 1)
 shape = SubResource("6")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer"]
+[node name="InfoBackground" type="ColorRect" parent="CanvasLayer"]
+offset_left = 23.0
+offset_top = 21.0
+offset_right = 227.0
+offset_bottom = 261.0
+color = Color(0, 0, 0, 0.75)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/InfoBackground"]
+layout_mode = 2
 offset_left = 10.0
 offset_top = 10.0
-offset_right = 400.0
-offset_bottom = 200.0
+offset_right = 215.0
+offset_bottom = 230.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/HBoxContainer"]
-layout_mode = 2
-
-[node name="FoodLabel" type="Label" parent="CanvasLayer/HBoxContainer/VBoxContainer"]
+[node name="FoodLabel" type="Label" parent="CanvasLayer/InfoBackground/VBoxContainer"]
 custom_minimum_size = Vector2(200, 24)
 layout_mode = 2
 mouse_filter = 0
 text = "Еда: 0"
 
-[node name="MedsLabel" type="Label" parent="CanvasLayer/HBoxContainer/VBoxContainer"]
+[node name="MedsLabel" type="Label" parent="CanvasLayer/InfoBackground/VBoxContainer"]
 custom_minimum_size = Vector2(200, 24)
 layout_mode = 2
 mouse_filter = 0
 text = "Медицина: 0"
 
-[node name="AmmoLabel" type="Label" parent="CanvasLayer/HBoxContainer/VBoxContainer"]
+[node name="AmmoLabel" type="Label" parent="CanvasLayer/InfoBackground/VBoxContainer"]
 custom_minimum_size = Vector2(200, 24)
 layout_mode = 2
 mouse_filter = 0
 text = "Боеприпасы: 0"
 
-[node name="MetalLabel" type="Label" parent="CanvasLayer/HBoxContainer/VBoxContainer"]
+[node name="MetalLabel" type="Label" parent="CanvasLayer/InfoBackground/VBoxContainer"]
 custom_minimum_size = Vector2(200, 24)
 layout_mode = 2
 mouse_filter = 0
 text = "Металл: 0"
 
-[node name="FuelLabel" type="Label" parent="CanvasLayer/HBoxContainer/VBoxContainer"]
+[node name="FuelLabel" type="Label" parent="CanvasLayer/InfoBackground/VBoxContainer"]
 custom_minimum_size = Vector2(200, 24)
 layout_mode = 2
 mouse_filter = 0
 text = "Топливо: 0"
 
-[node name="WaterLabel" type="Label" parent="CanvasLayer/HBoxContainer/VBoxContainer"]
+[node name="WaterLabel" type="Label" parent="CanvasLayer/InfoBackground/VBoxContainer"]
 custom_minimum_size = Vector2(200, 24)
 layout_mode = 2
 mouse_filter = 0
 text = "Вода: 0"
 
-[node name="BaseHPLabel" type="Label" parent="CanvasLayer/HBoxContainer/VBoxContainer"]
+[node name="BaseHPLabel" type="Label" parent="CanvasLayer/InfoBackground/VBoxContainer"]
 custom_minimum_size = Vector2(200, 24)
 layout_mode = 2
 mouse_filter = 0
 text = "Прочность базы: 0"
 
-[node name="SurvivorsLabel" type="Label" parent="CanvasLayer/HBoxContainer/VBoxContainer"]
+[node name="SurvivorsLabel" type="Label" parent="CanvasLayer/InfoBackground/VBoxContainer"]
 custom_minimum_size = Vector2(200, 24)
 layout_mode = 2
 mouse_filter = 0

@@ -1,114 +1,147 @@
-# Raid.gd
 extends Node2D
 
-# ⏱️ Настройка длительности всплывающих сообщений (в секундах)
 const MESSAGE_DURATION := 3.0
 
-@onready var zombie_label = $CanvasLayer/ZombieLabel
-@onready var ammo_label = $CanvasLayer/AmmoLabel
-@onready var attack_btn = $CanvasLayer/AttackButton
-@onready var retreat_btn = $CanvasLayer/RetreatButton
+@onready var zombie_label = $CanvasLayer/InfoBackground/ZombieLabel
+@onready var ammo_label = $CanvasLayer/InfoBackground/AmmoLabel
+@onready var survivors_label = $CanvasLayer/InfoBackground/SurvivorsLabel
+# @onready var retreat_btn = $CanvasLayer/RetreatButton  # Удалено
+
+# Звуки
+@onready var hover_sound = preload("res://sounds/hover_click.ogg")
+@onready var click_sound = preload("res://sounds/item_click.ogg")
+
+var sfx_hover: AudioStreamPlayer
+var sfx_click: AudioStreamPlayer
 
 var zombies: int = 0
 var local_ammo: int = 0
-var cost_food := 0
-var cost_fuel := 0
-var cost_ammo := 0
+var raid_survivors: int = 0
+var base_ammo_before: int = 0
 var started := false
 
-# Для управления динамическими сообщениями
-var _current_message: Control = null  # ← изменено с Label на Control
+var _current_message: Control = null
 var _message_timer: SceneTreeTimer = null
 
 func _ready():
 	if not Globals:
 		push_error("Globals не загружен! Добавь Globals.gd в Autoload.")
 		return
+
+	sfx_hover = AudioStreamPlayer.new()
+	add_child(sfx_hover)
+	sfx_click = AudioStreamPlayer.new()
+	add_child(sfx_click)
+
 	randomize()
 	_start_raid()
 
-func _start_raid():
-	# генерируем зомби и списываем начальные ресурсы
-	zombies = randi_range(10, 100)
-	cost_food = randi_range(1, 3)
-	cost_fuel = randi_range(1, 2)
-	cost_ammo = randi_range(5, 10)
+	# Подключаем hover к зомби-зонам (эффекты отключены)
+	var zombie_areas = [ $Zombie1/Zombie1Area, $Zombie2/Zombie2Area ]
+	for area in zombie_areas:
+		if area:
+			if not area.is_connected("mouse_entered", Callable(self, "_on_zombie_hover")):
+				area.connect("mouse_entered", Callable(self, "_on_zombie_hover").bind(area, true))
+			if not area.is_connected("mouse_exited", Callable(self, "_on_zombie_hover")):
+				area.connect("mouse_exited", Callable(self, "_on_zombie_hover").bind(area, false))
 
-	# снимаем ресурсы (не уходим в отрицательное)
+func _start_raid():
+	raid_survivors = max(1, min(Globals.Survivors, randi_range(1, Globals.Survivors)))
+	zombies = raid_survivors * randi_range(5, 15)
+
+	var cost_food = raid_survivors * randi_range(1, 2)
+	var cost_fuel = raid_survivors * randi_range(1, 2)
+
 	Globals.Food = max(0, Globals.Food - cost_food)
 	Globals.Fuel = max(0, Globals.Fuel - cost_fuel)
-	Globals.Ammo = max(0, Globals.Ammo - cost_ammo)
+	base_ammo_before = Globals.Ammo
+	local_ammo = min(Globals.Ammo, raid_survivors * 10)
 
-	# сохраняем, если есть метод save()
 	if Globals.has_method("save"):
 		Globals.save()
 
-	# локальный ammo — то, что осталось для рейда
-	local_ammo = Globals.Ammo
-
 	started = true
 	update_ui()
-	_show_temporary_message("Расход: Еда -%d Топливо -%d Боеприпасы -%d" % [cost_food, cost_fuel, cost_ammo])
+	_show_temporary_message("Рейд: %d выживших | Еда -%d, Топливо -%d, Боеприпасы +%d" % [raid_survivors, cost_food, cost_fuel, local_ammo])
 
 func update_ui():
 	if zombie_label: zombie_label.text = "Зомби: %d" % zombies
 	if ammo_label: ammo_label.text = "Боеприпасы: %d" % local_ammo
+	if survivors_label: survivors_label.text = "Выживших в рейде: %d" % raid_survivors
 
-# Универсальный клик по зомби (срабатывает для Zombie1 и Zombie2)
-func _on_zombie_input(_viewport, event, _shape_idx):
+# === HOVER НА ЗОМБИ === (отключено)
+func _on_zombie_hover(_area: Area2D, _entered: bool):
+	pass
+
+# === ВИЗУАЛЬНЫЙ ОТКЛИК КЛИКА ===
+func _click_flash(sprite: Sprite2D):
+	if not sprite: return
+	sprite.scale = Vector2(1.05, 1.05)
+	sprite.modulate = Color(1.4, 1.4, 1.4)
+	if click_sound:
+		sfx_click.stream = click_sound
+		sfx_click.play()
+	await get_tree().create_timer(0.1).timeout
+	sprite.scale = Vector2(1, 1)
+	sprite.modulate = Color(1, 1, 1)
+
+# === КЛИКИ ПО ЗОМБИ ===
+func _on_zombie1_input(_viewport, event, _shape_idx):
 	if not started:
 		return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_click_flash($Zombie1)
 		_on_attack_by_click()
 
-# Кнопка Атаковать (альтернатива клику по зомби)
-func _on_attack_pressed():
-	_on_attack_by_click()
+func _on_zombie2_input(_viewport, event, _shape_idx):
+	if not started:
+		return
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_click_flash($Zombie2)
+		_on_attack_by_click()
+
+# === ТАП ПО GO BASE → ОТСТУПЛЕНИЕ ===
+func _on_go_base_input(_viewport, event, _shape_idx):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_click_flash($GoBase)
+		_retreat()  # ← именно отступление!
 
 func _on_attack_by_click():
 	if local_ammo <= 0:
-		_show_temporary_message("Патронов нет!")
+		_show_temporary_message("Боеприпасов нет!")
 		return
 
-	# тратим 1 патрон
 	local_ammo -= 1
-
-	# убиваем рандомно 1..3 зомби
-	var killed = randi_range(1, 3)
+	var killed = randi_range(1, min(3, zombies))
 	zombies = max(0, zombies - killed)
-
-	# синхронизируем с глобальными патронами
-	Globals.Ammo = local_ammo
-	if Globals.has_method("save"):
-		Globals.save()
-
 	update_ui()
 
 	if zombies <= 0:
 		_on_victory()
 
-func _on_retreat_pressed():
-	_retreat()
-
+# === ОТСТУПЛЕНИЕ С ОГРАНИЧЕНИЕМ ПОТЕРЬ (≤10%) ===
 func _retreat():
-	# Потери при отступлении: людей и медицина рандомно
-	var lost_people = 0
-	if Globals.Survivors > 0:
-		lost_people = randi_range(1, min(Globals.Survivors, 2))
-	Globals.Survivors = max(0, Globals.Survivors - lost_people)
+	# Максимум 10% от тех, кто пошёл в рейд, могут погибнуть
+	var max_dead = max(1, int(round(raid_survivors * 0.1)))  # минимум 1, если рейд был
+	var dead = randi_range(0, max_dead)
+	
+	# Раненые — до оставшихся (но не больше 10% от рейда в сумме с мёртвыми)
+	var max_wounded = min(raid_survivors - dead, max_dead)
+	var wounded = randi_range(0, max_wounded)
 
-	var lost_meds = 0
-	if Globals.Meds > 0:
-		lost_meds = randi_range(1, min(Globals.Meds, 3))
-	Globals.Meds = max(0, Globals.Meds - lost_meds)
+	var total_lost = dead + wounded
 
-	# сохраняем патроны в глобальные
-	Globals.Ammo = local_ammo
+	Globals.Survivors = max(0, Globals.Survivors - total_lost)
+	var meds_used = min(Globals.Meds, wounded)
+	Globals.Meds = max(0, Globals.Meds - meds_used)
+
+	# Возвращаем неиспользованные боеприпасы
+	Globals.Ammo = base_ammo_before - (min(base_ammo_before, raid_survivors * 10) - local_ammo)
+
 	if Globals.has_method("save"):
 		Globals.save()
 
-	_show_temporary_message("Отступили. Потери: выживших -%d, медикаментов -%d" % [lost_people, lost_meds])
-	# Используем таймер через сигнал, а не await
+	_show_temporary_message("Отступление! Погибло: %d, ранено: %d, медицины: %d" % [dead, wounded, meds_used])
 	_message_timer = get_tree().create_timer(MESSAGE_DURATION)
 	_message_timer.timeout.connect(_on_retreat_timeout)
 
@@ -116,19 +149,19 @@ func _on_retreat_timeout():
 	_return_to_base()
 
 func _on_victory():
-	# Награды
-	var g_food = randi_range(2, 7)
-	var g_metal = randi_range(1, 4)
-	var g_ammo_reward = randi_range(1, 5)
+	var g_food = raid_survivors * randi_range(2, 4)
+	var g_metal = raid_survivors * randi_range(1, 3)
+	var g_ammo_reward = raid_survivors * randi_range(1, 2)
 
 	Globals.Food += g_food
 	Globals.Metal += g_metal
-	Globals.Ammo += g_ammo_reward
+	Globals.Ammo = local_ammo + g_ammo_reward
+	Globals.BaseHP += raid_survivors
 
 	if Globals.has_method("save"):
 		Globals.save()
 
-	_show_temporary_message("Победа!\n+Еда %d\n+Металл %d\n+Боеприпасы %d" % [g_food, g_metal, g_ammo_reward])
+	_show_temporary_message("Победа! Еда +%d, Металл +%d, Боеприпасы +%d, База +%d" % [g_food, g_metal, g_ammo_reward, raid_survivors])
 	_message_timer = get_tree().create_timer(MESSAGE_DURATION)
 	_message_timer.timeout.connect(_on_victory_timeout)
 
@@ -138,56 +171,48 @@ func _on_victory_timeout():
 func _return_to_base():
 	get_tree().change_scene_to_file("res://Base.tscn")
 
-# Показывает всплывающее сообщение внизу экрана на подложке (в 2+ строки)
+# === СИСТЕМА СООБЩЕНИЙ ===
 func _show_temporary_message(text: String, duration: float = MESSAGE_DURATION):
-	# Отменяем предыдущий таймер
 	if _message_timer:
 		_message_timer.timeout.disconnect(_on_message_timeout)
 		_message_timer = null
-
-	# Удаляем старое сообщение
 	if _current_message:
 		_current_message.queue_free()
 		_current_message = null
 
-	# Создаём контейнер (Panel) для подложки
 	var panel = Panel.new()
 	panel.name = "MessagePanel"
-	panel.add_theme_color_override("panel", Color(0, 0, 0, 0.7))  # полупрозрачный чёрный фон
-	panel.anchor_left = 0.5
-	panel.anchor_top = 1.0
-	panel.anchor_right = 0.5
+	panel.add_theme_color_override("panel", Color(0, 0, 0, 0.75))
+	panel.anchor_left = 0.0
+	panel.anchor_right = 1.0
 	panel.anchor_bottom = 1.0
-	panel.offset_left = -300
-	panel.offset_right = 300
-	panel.offset_top = -120
-	panel.offset_bottom = -40
+	panel.offset_left = 0
+	panel.offset_right = 0
+	panel.offset_bottom = 0
+	panel.offset_top = -50
 	panel.z_index = 100
 	$CanvasLayer.add_child(panel)
 
-	# Создаём текст
 	var lbl = Label.new()
 	lbl.text = text
-	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lbl.autowrap_mode = TextServer.AUTOWRAP_OFF
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 36)
-	lbl.modulate = Color(1, 1, 1)  # белый
+	lbl.clip_text = true
+	lbl.add_theme_font_size_override("font_size", 28)
+	lbl.modulate = Color(1, 1, 1)
 	panel.add_child(lbl)
 
-	# Центрируем текст внутри панели
 	lbl.anchor_left = 0.0
-	lbl.anchor_top = 0.0
 	lbl.anchor_right = 1.0
+	lbl.anchor_top = 0.0
 	lbl.anchor_bottom = 1.0
 	lbl.offset_left = 10
-	lbl.offset_top = 10
 	lbl.offset_right = -10
-	lbl.offset_bottom = -10
+	lbl.offset_top = 0
+	lbl.offset_bottom = 0
 
 	_current_message = panel
-
-	# Запускаем таймер
 	_message_timer = get_tree().create_timer(duration)
 	_message_timer.timeout.connect(_on_message_timeout)
 
