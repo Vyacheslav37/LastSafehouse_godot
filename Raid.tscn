@@ -35,13 +35,17 @@ offset_top = 60.0
 text = "Боеприпасы: 0"
 
 [node name="AttackButton" type="Button" parent="CanvasLayer"]
-offset_left = 20.0
-offset_top = 120.0
+offset_left = 927.0
+offset_top = 595.0
+offset_right = 1089.0
+offset_bottom = 665.0
 text = "АТАКОВАТЬ"
 
 [node name="RetreatButton" type="Button" parent="CanvasLayer"]
-offset_left = 20.0
-offset_top = 180.0
+offset_left = 228.0
+offset_top = 606.0
+offset_right = 384.0
+offset_bottom = 670.0
 text = "ОТСТУПИТЬ"
 
 [connection signal="pressed" from="CanvasLayer/AttackButton" to="." method="_on_attack_pressed"]

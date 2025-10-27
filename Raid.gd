@@ -2,7 +2,7 @@
 extends Node2D
 
 # ⏱️ Настройка длительности всплывающих сообщений (в секундах)
-const MESSAGE_DURATION := 2.0
+const MESSAGE_DURATION := 3.0
 
 @onready var zombie_label = $CanvasLayer/ZombieLabel
 @onready var ammo_label = $CanvasLayer/AmmoLabel
@@ -17,7 +17,7 @@ var cost_ammo := 0
 var started := false
 
 # Для управления динамическими сообщениями
-var _current_message: Label = null
+var _current_message: Control = null  # ← изменено с Label на Control
 var _message_timer: SceneTreeTimer = null
 
 func _ready():
@@ -48,7 +48,7 @@ func _start_raid():
 
 	started = true
 	update_ui()
-	_show_temporary_message("Выход: -Еда %d, -Топливо %d, -Боеприпасы %d" % [cost_food, cost_fuel, cost_ammo])
+	_show_temporary_message("Расход: Еда -%d Топливо -%d Боеприпасы -%d" % [cost_food, cost_fuel, cost_ammo])
 
 func update_ui():
 	if zombie_label: zombie_label.text = "Зомби: %d" % zombies
@@ -107,8 +107,12 @@ func _retreat():
 	if Globals.has_method("save"):
 		Globals.save()
 
-	_show_temporary_message("Отступили. Потери: выживших — %d, медикаментов — %d" % [lost_people, lost_meds])
-	await get_tree().create_timer(MESSAGE_DURATION).timeout
+	_show_temporary_message("Отступили. Потери: выживших -%d, медикаментов -%d" % [lost_people, lost_meds])
+	# Используем таймер через сигнал, а не await
+	_message_timer = get_tree().create_timer(MESSAGE_DURATION)
+	_message_timer.timeout.connect(_on_retreat_timeout)
+
+func _on_retreat_timeout():
 	_return_to_base()
 
 func _on_victory():
@@ -124,14 +128,17 @@ func _on_victory():
 	if Globals.has_method("save"):
 		Globals.save()
 
-	_show_temporary_message("Победа! +Еда %d, +Металл %d, +Боеприпасы %d" % [g_food, g_metal, g_ammo_reward])
-	await get_tree().create_timer(MESSAGE_DURATION).timeout
+	_show_temporary_message("Победа!\n+Еда %d\n+Металл %d\n+Боеприпасы %d" % [g_food, g_metal, g_ammo_reward])
+	_message_timer = get_tree().create_timer(MESSAGE_DURATION)
+	_message_timer.timeout.connect(_on_victory_timeout)
+
+func _on_victory_timeout():
 	_return_to_base()
 
 func _return_to_base():
 	get_tree().change_scene_to_file("res://Base.tscn")
 
-# Показываем временное сообщение по центру экрана (без анимации, одно за раз)
+# Показывает всплывающее сообщение внизу экрана на подложке (в 2+ строки)
 func _show_temporary_message(text: String, duration: float = MESSAGE_DURATION):
 	# Отменяем предыдущий таймер
 	if _message_timer:
@@ -143,34 +150,49 @@ func _show_temporary_message(text: String, duration: float = MESSAGE_DURATION):
 		_current_message.queue_free()
 		_current_message = null
 
-	# Создаём новое
+	# Создаём контейнер (Panel) для подложки
+	var panel = Panel.new()
+	panel.name = "MessagePanel"
+	panel.add_theme_color_override("panel", Color(0, 0, 0, 0.7))  # полупрозрачный чёрный фон
+	panel.anchor_left = 0.5
+	panel.anchor_top = 1.0
+	panel.anchor_right = 0.5
+	panel.anchor_bottom = 1.0
+	panel.offset_left = -300
+	panel.offset_right = 300
+	panel.offset_top = -120
+	panel.offset_bottom = -40
+	panel.z_index = 100
+	$CanvasLayer.add_child(panel)
+
+	# Создаём текст
 	var lbl = Label.new()
 	lbl.text = text
 	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 48)
+	lbl.add_theme_font_size_override("font_size", 36)
+	lbl.modulate = Color(1, 1, 1)  # белый
+	panel.add_child(lbl)
 
-	# Центрирование через anchor
-	lbl.anchor_left = 0.5
-	lbl.anchor_top = 0.5
-	lbl.anchor_right = 0.5
-	lbl.anchor_bottom = 0.5
-	lbl.offset_left = -400
-	lbl.offset_right = 400
-	lbl.offset_top = -100
-	lbl.offset_bottom = 100
+	# Центрируем текст внутри панели
+	lbl.anchor_left = 0.0
+	lbl.anchor_top = 0.0
+	lbl.anchor_right = 1.0
+	lbl.anchor_bottom = 1.0
+	lbl.offset_left = 10
+	lbl.offset_top = 10
+	lbl.offset_right = -10
+	lbl.offset_bottom = -10
 
-	lbl.modulate = Color(1, 1, 1)  # белый, непрозрачный
-	$CanvasLayer.add_child(lbl)
-	_current_message = lbl
+	_current_message = panel
 
-	# Запускаем новый таймер
+	# Запускаем таймер
 	_message_timer = get_tree().create_timer(duration)
 	_message_timer.timeout.connect(_on_message_timeout)
 
 func _on_message_timeout():
-	if _current_message:
+	if _current_message and _current_message.get_parent():
 		_current_message.queue_free()
 		_current_message = null
 	_message_timer = null

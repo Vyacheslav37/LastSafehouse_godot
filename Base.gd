@@ -21,7 +21,7 @@ var sfx_hover: AudioStreamPlayer
 var sfx_click: AudioStreamPlayer
 
 # Для управления динамическими сообщениями
-var _current_message: Label = null
+var _current_message: Control = null  # ← изменено с Label на Control (теперь это Panel)
 var _message_timer: SceneTreeTimer = null
 
 func _ready():
@@ -46,6 +46,7 @@ func _ready():
 	
 	print("Игра запущена. Проверяем узлы...")
 	update_labels()
+	_add_background_to_labels()  # ← ДОБАВЛЕНО: подложки под лейблы
 
 func _process(_delta):
 	update_labels()
@@ -64,6 +65,32 @@ func update_labels():
 	if water_label: water_label.text = "Вода: " + str(Globals.Water)
 	if base_hp_label: base_hp_label.text = "Прочность базы: " + str(Globals.BaseHP)
 	if survivors_label: survivors_label.text = "Выжившие: " + str(Globals.Survivors)
+
+# Добавляет полупрозрачную подложку под каждый лейбл
+func _add_background_to_labels():
+	var labels = [
+		food_label, meds_label, ammo_label, metal_label,
+		fuel_label, water_label, base_hp_label, survivors_label
+	]
+	for label in labels:
+		if not label or label.get_child_count() > 0:
+			continue  # пропускаем, если уже есть фон или лейбл не найден
+		
+		var panel = Panel.new()
+		panel.name = "LabelBackground"
+		panel.add_theme_color_override("panel", Color(0, 0, 0, 0.15))  # чёрный, 15% непрозрачности
+		label.add_child(panel)
+		
+		# Растягиваем панель на весь лейбл + небольшие отступы
+		panel.anchor_left = 0.0
+		panel.anchor_top = 0.0
+		panel.anchor_right = 1.0
+		panel.anchor_bottom = 1.0
+		panel.offset_left = -6
+		panel.offset_top = -3
+		panel.offset_right = -6
+		panel.offset_bottom = -3
+		panel.z_index = -1  # панель под текстом
 
 # Hover-подсветка
 func _on_area_hover(area: Area2D, entered: bool):
@@ -96,7 +123,7 @@ func _on_Raid_area_input_event(_viewport, event, _shape_idx):
 	if event is InputEventMouseButton and event.pressed:
 		print("Попытка рейда...")
 		if Globals.Food < 5 or Globals.Fuel < 3:
-			show_message("Недостаточно еды или топлива для вылазки!")
+			show_message("Недостаточно еды или топлива\nдля вылазки!")
 			return
 		Globals.add_food(-5)
 		Globals.add_fuel(-3)
@@ -139,7 +166,7 @@ func _on_Weapon_area_input_event(_viewport, event: InputEvent, _shape_idx):
 		Globals.add_ammo(1)
 		_click_flash($Weapon)
 
-# Показывает всплывающее сообщение по центру экрана (как в Raid)
+# Показывает всплывающее сообщение внизу экрана на подложке (в 2 строки)
 func show_message(text: String, duration: float = MESSAGE_DURATION):
 	# Отменяем предыдущий таймер
 	if _message_timer:
@@ -151,34 +178,49 @@ func show_message(text: String, duration: float = MESSAGE_DURATION):
 		_current_message.queue_free()
 		_current_message = null
 
-	# Создаём новое
+	# Создаём контейнер (Panel) для подложки
+	var panel = Panel.new()
+	panel.name = "MessagePanel"
+	panel.add_theme_color_override("panel", Color(0, 0, 0, 0.7))  # полупрозрачный чёрный фон
+	panel.anchor_left = 0.5
+	panel.anchor_top = 1.0
+	panel.anchor_right = 0.5
+	panel.anchor_bottom = 1.0
+	panel.offset_left = -300
+	panel.offset_right = 300
+	panel.offset_top = -120
+	panel.offset_bottom = -40
+	panel.z_index = 100
+	$CanvasLayer.add_child(panel)
+
+	# Создаём текст
 	var lbl = Label.new()
 	lbl.text = text
 	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 48)
+	lbl.add_theme_font_size_override("font_size", 36)  # чуть меньше, чем в рейде
+	lbl.modulate = Color(1, 1, 1)  # белый
+	panel.add_child(lbl)
 
-	# Центрирование
-	lbl.anchor_left = 0.5
-	lbl.anchor_top = 0.5
-	lbl.anchor_right = 0.5
-	lbl.anchor_bottom = 0.5
-	lbl.offset_left = -400
-	lbl.offset_right = 400
-	lbl.offset_top = -100
-	lbl.offset_bottom = 100
+	# Центрируем текст внутри панели
+	lbl.anchor_left = 0.0
+	lbl.anchor_top = 0.0
+	lbl.anchor_right = 1.0
+	lbl.anchor_bottom = 1.0
+	lbl.offset_left = 10
+	lbl.offset_top = 10
+	lbl.offset_right = -10
+	lbl.offset_bottom = -10
 
-	lbl.modulate = Color(1, 1, 1)  # белый, непрозрачный
-	$CanvasLayer.add_child(lbl)
-	_current_message = lbl
+	_current_message = panel  # теперь храним Panel
 
 	# Запускаем таймер
 	_message_timer = get_tree().create_timer(duration)
 	_message_timer.timeout.connect(_on_base_message_timeout)
 
 func _on_base_message_timeout():
-	if _current_message:
+	if _current_message and _current_message.get_parent():
 		_current_message.queue_free()
 		_current_message = null
 	_message_timer = null
