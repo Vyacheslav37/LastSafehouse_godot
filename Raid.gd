@@ -5,7 +5,6 @@ const MESSAGE_DURATION := 3.0
 @onready var zombie_label = $CanvasLayer/InfoBackground/ZombieLabel
 @onready var ammo_label = $CanvasLayer/InfoBackground/AmmoLabel
 @onready var survivors_label = $CanvasLayer/InfoBackground/SurvivorsLabel
-# @onready var retreat_btn = $CanvasLayer/RetreatButton  # Удалено
 
 # Звуки
 @onready var hover_sound = preload("res://sounds/hover_click.ogg")
@@ -62,7 +61,7 @@ func _start_raid():
 
 	started = true
 	update_ui()
-	_show_temporary_message("Рейд: %d выживших | Еда -%d, Топливо -%d, Боеприпасы +%d" % [raid_survivors, cost_food, cost_fuel, local_ammo])
+	_show_temporary_message("Рейд: %d выживших | Еда -%d, Топливо -%d, Боеприпасы %d" % [raid_survivors, cost_food, cost_fuel, local_ammo])
 
 func update_ui():
 	if zombie_label: zombie_label.text = "Зомби: %d" % zombies
@@ -104,7 +103,7 @@ func _on_zombie2_input(_viewport, event, _shape_idx):
 func _on_go_base_input(_viewport, event, _shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_click_flash($GoBase)
-		_retreat()  # ← именно отступление!
+		_retreat()
 
 func _on_attack_by_click():
 	if local_ammo <= 0:
@@ -119,21 +118,20 @@ func _on_attack_by_click():
 	if zombies <= 0:
 		_on_victory()
 
-# === ОТСТУПЛЕНИЕ С ОГРАНИЧЕНИЕМ ПОТЕРЬ (≤10%) ===
+# === ОТСТУПЛЕНИЕ: потери ≤10%, медицина только на раненых ===
 func _retreat():
-	# Максимум 10% от тех, кто пошёл в рейд, могут погибнуть
-	var max_dead = max(1, int(round(raid_survivors * 0.1)))  # минимум 1, если рейд был
-	var dead = randi_range(0, max_dead)
-	
-	# Раненые — до оставшихся (но не больше 10% от рейда в сумме с мёртвыми)
-	var max_wounded = min(raid_survivors - dead, max_dead)
-	var wounded = randi_range(0, max_wounded)
+	var max_lost = max(1, int(round(raid_survivors * 0.1)))  # максимум 10% от рейда
+	var dead = randi_range(0, max_lost)
+	var wounded = randi_range(0, max_lost - dead)
 
-	var total_lost = dead + wounded
+	# Сколько раненых можно вылечить?
+	var healed_wounded = min(wounded, Globals.Meds)
+	# Остальные раненые погибают
+	var final_dead = dead + (wounded - healed_wounded)
+	var final_wounded = healed_wounded
 
-	Globals.Survivors = max(0, Globals.Survivors - total_lost)
-	var meds_used = min(Globals.Meds, wounded)
-	Globals.Meds = max(0, Globals.Meds - meds_used)
+	Globals.Survivors = max(0, Globals.Survivors - final_dead - final_wounded)
+	Globals.Meds = max(0, Globals.Meds - healed_wounded)
 
 	# Возвращаем неиспользованные боеприпасы
 	Globals.Ammo = base_ammo_before - (min(base_ammo_before, raid_survivors * 10) - local_ammo)
@@ -141,7 +139,7 @@ func _retreat():
 	if Globals.has_method("save"):
 		Globals.save()
 
-	_show_temporary_message("Отступление! Погибло: %d, ранено: %d, медицины: %d" % [dead, wounded, meds_used])
+	_show_temporary_message("Отступление! Погибло: %d, ранено: %d, медицины: -%d" % [final_dead, final_wounded, healed_wounded])
 	_message_timer = get_tree().create_timer(MESSAGE_DURATION)
 	_message_timer.timeout.connect(_on_retreat_timeout)
 

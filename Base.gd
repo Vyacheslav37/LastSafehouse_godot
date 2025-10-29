@@ -131,6 +131,10 @@ func _on_Metal_area_input_event(_viewport, event: InputEvent, _shape_idx):
 
 func _on_Garden_area_input_event(_viewport, event: InputEvent, _shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if Globals.Water <= 0:
+			show_message("Недостаточно воды для выращивания еды!")
+			return
+		Globals.add_water(-1)
 		Globals.add_food(1)
 		_click_flash($Garden)
 
