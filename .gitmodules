@@ -1,0 +1,3 @@
+[submodule "addons/godot-yandex-games-sdk"]
+	path = addons/godot-yandex-games-sdk
+	url = https://github.com/BasilYes/godot-yandex-games-sdk.git
