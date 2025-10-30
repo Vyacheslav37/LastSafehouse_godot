@@ -5,6 +5,7 @@ const MESSAGE_DURATION := 3.0
 @onready var zombie_label = $CanvasLayer/InfoBackground/ZombieLabel
 @onready var ammo_label = $CanvasLayer/InfoBackground/AmmoLabel
 @onready var survivors_label = $CanvasLayer/InfoBackground/SurvivorsLabel
+@onready var ammo_boost_btn = $CanvasLayer/AmmoBoostButton
 
 # Звуки
 @onready var hover_sound = preload("res://sounds/hover_click.ogg")
@@ -18,6 +19,7 @@ var local_ammo: int = 0
 var raid_survivors: int = 0
 var base_ammo_before: int = 0
 var started := false
+var _ammo_boost_used := false
 
 var _current_message: Control = null
 var _message_timer: SceneTreeTimer = null
@@ -35,14 +37,44 @@ func _ready():
 	randomize()
 	_start_raid()
 
-	# Подключаем hover к зомби-зонам (эффекты отключены)
 	var zombie_areas = [ $Zombie1/Zombie1Area, $Zombie2/Zombie2Area ]
 	for area in zombie_areas:
-		if area:
-			if not area.is_connected("mouse_entered", Callable(self, "_on_zombie_hover")):
-				area.connect("mouse_entered", Callable(self, "_on_zombie_hover").bind(area, true))
-			if not area.is_connected("mouse_exited", Callable(self, "_on_zombie_hover")):
-				area.connect("mouse_exited", Callable(self, "_on_zombie_hover").bind(area, false))
+		if area and not area.is_connected("mouse_entered", Callable(self, "_on_zombie_hover")):
+			area.connect("mouse_entered", Callable(self, "_on_zombie_hover").bind(area, true))
+		if area and not area.is_connected("mouse_exited", Callable(self, "_on_zombie_hover")):
+			area.connect("mouse_exited", Callable(self, "_on_zombie_hover").bind(area, false))
+
+	if ammo_boost_btn and not ammo_boost_btn.is_connected("gui_input", Callable(self, "_on_ammo_boost_gui_input")):
+		ammo_boost_btn.connect("gui_input", Callable(self, "_on_ammo_boost_gui_input"))
+
+	# Подключаем сигнал награды от AdManager
+	if AdManager:
+		AdManager.reward_granted.connect(_on_reward_granted)
+
+func _on_ammo_boost_gui_input(event):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if _ammo_boost_used:
+			_show_temporary_message("Уже использовано!")
+			return
+
+		# Проверка: доступен ли Yandex SDK
+		if not Engine.has_singleton("YandexSDK"):
+			_show_temporary_message("Реклама недоступна")
+			return
+
+		AdManager.show_rewarded()
+
+# Обработка награды
+func _on_reward_granted(amount: int):
+	if _ammo_boost_used:
+		return
+
+	local_ammo += amount
+	_ammo_boost_used = true
+	update_ui()
+	_show_temporary_message("Получено +%d боеприпаса!" % amount)
+
+# === ОСТАЛЬНОЙ КОД БЕЗ ИЗМЕНЕНИЙ ===
 
 func _start_raid():
 	raid_survivors = max(1, min(Globals.Survivors, randi_range(1, Globals.Survivors)))
@@ -68,11 +100,9 @@ func update_ui():
 	if ammo_label: ammo_label.text = "Боеприпасы: %d" % local_ammo
 	if survivors_label: survivors_label.text = "Выживших в рейде: %d" % raid_survivors
 
-# === HOVER НА ЗОМБИ === (отключено)
 func _on_zombie_hover(_area: Area2D, _entered: bool):
 	pass
 
-# === ВИЗУАЛЬНЫЙ ОТКЛИК КЛИКА ===
 func _click_flash(sprite: Sprite2D):
 	if not sprite: return
 	sprite.scale = Vector2(1.05, 1.05)
@@ -84,22 +114,18 @@ func _click_flash(sprite: Sprite2D):
 	sprite.scale = Vector2(1, 1)
 	sprite.modulate = Color(1, 1, 1)
 
-# === КЛИКИ ПО ЗОМБИ ===
 func _on_zombie1_input(_viewport, event, _shape_idx):
-	if not started:
-		return
+	if not started: return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_click_flash($Zombie1)
 		_on_attack_by_click()
 
 func _on_zombie2_input(_viewport, event, _shape_idx):
-	if not started:
-		return
+	if not started: return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_click_flash($Zombie2)
 		_on_attack_by_click()
 
-# === ТАП ПО GO BASE → ОТСТУПЛЕНИЕ ===
 func _on_go_base_input(_viewport, event, _shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_click_flash($GoBase)
@@ -109,31 +135,23 @@ func _on_attack_by_click():
 	if local_ammo <= 0:
 		_show_temporary_message("Боеприпасов нет!")
 		return
-
 	local_ammo -= 1
 	var killed = randi_range(1, min(3, zombies))
 	zombies = max(0, zombies - killed)
 	update_ui()
-
 	if zombies <= 0:
 		_on_victory()
 
-# === ОТСТУПЛЕНИЕ: потери ≤10%, медицина только на раненых ===
 func _retreat():
-	var max_lost = max(1, int(round(raid_survivors * 0.1)))  # максимум 10% от рейда
+	var max_lost = max(1, int(round(raid_survivors * 0.1)))
 	var dead = randi_range(0, max_lost)
 	var wounded = randi_range(0, max_lost - dead)
-
-	# Сколько раненых можно вылечить?
 	var healed_wounded = min(wounded, Globals.Meds)
-	# Остальные раненые погибают
 	var final_dead = dead + (wounded - healed_wounded)
 	var final_wounded = healed_wounded
 
 	Globals.Survivors = max(0, Globals.Survivors - final_dead - final_wounded)
 	Globals.Meds = max(0, Globals.Meds - healed_wounded)
-
-	# Возвращаем неиспользованные боеприпасы
 	Globals.Ammo = base_ammo_before - (min(base_ammo_before, raid_survivors * 10) - local_ammo)
 
 	if Globals.has_method("save"):
@@ -169,7 +187,6 @@ func _on_victory_timeout():
 func _return_to_base():
 	get_tree().change_scene_to_file("res://Base.tscn")
 
-# === СИСТЕМА СООБЩЕНИЙ ===
 func _show_temporary_message(text: String, duration: float = MESSAGE_DURATION):
 	if _message_timer:
 		_message_timer.timeout.disconnect(_on_message_timeout)
