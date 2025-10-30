@@ -1,6 +1,7 @@
 extends Node2D
 
 const MESSAGE_DURATION := 2.0
+const YANDEX_REWARDED_ID := "R-M-DEMO-rewarded-video"  # ← замени на свой ID в релизе
 
 @onready var food_label = get_node_or_null("CanvasLayer/InfoBackground/VBoxContainer/FoodLabel")
 @onready var meds_label = get_node_or_null("CanvasLayer/InfoBackground/VBoxContainer/MedsLabel")
@@ -18,6 +19,7 @@ var sfx_hover: AudioStreamPlayer
 var sfx_click: AudioStreamPlayer
 var _current_message: Control = null
 var _message_timer: SceneTreeTimer = null
+var _ad_requested := false
 
 func _ready():
 	sfx_hover = AudioStreamPlayer.new()
@@ -37,13 +39,69 @@ func _ready():
 			area.connect("mouse_exited", Callable(self, "_on_area_hover").bind(area, false))
 	
 	update_labels()
-	# _add_background_to_labels()  # ← отключено, подложка уже в сценеels()
 
 func _process(_delta):
 	if Globals and Globals.Food >= 100:
 		Globals.Survivors += 1
 		Globals.Food -= 100
 	update_labels()
+
+# === ОСНОВНАЯ ЛОГИКА РЕКЛАМЫ ===
+
+func _on_Raid_area_input_event(_viewport, event, _shape_idx):
+	if event is InputEventMouseButton and event.pressed:
+		if Globals.Survivors <= 0:
+			show_message("Нет выживших! Невозможно отправиться в рейд.")
+			return
+		if Globals.Food < 5 or Globals.Fuel < 3:
+			show_message("Недостаточно еды или топлива для вылазки!")
+			return
+
+		# Проверяем, доступна ли реклама (только на Android)
+		if Engine.has_singleton("YandexRewarded"):
+			if _ad_requested:
+				show_message("Реклама уже загружается...")
+				return
+
+			_ad_requested = true
+			var ads = Engine.get_singleton("YandexRewarded")
+
+			# Подключаем сигналы (только один раз)
+			if not ads.is_connected("onRewardedGranted", Callable(self, "_on_ad_granted")):
+				ads.connect("onRewardedGranted", Callable(self, "_on_ad_granted"))
+				ads.connect("onRewardedError", Callable(self, "_on_ad_error"))
+				ads.connect("onRewardedClosed", Callable(self, "_on_ad_closed"))
+
+			show_message("Загрузка рекламы...")
+			ads.loadRewarded(YANDEX_REWARDED_ID)
+		else:
+			# Нет рекламы → сразу в рейд (ПК / отладка)
+			_proceed_to_raid()
+
+# === ОБРАБОТЧИКИ РЕКЛАМЫ ===
+
+func _on_ad_granted():
+	_ad_requested = false
+	show_message("Реклама просмотрена! Переход в рейд...")
+	await get_tree().create_timer(0.5).timeout
+	_proceed_to_raid()
+
+func _on_ad_error(error: String):
+	_ad_requested = false
+	var msg = "Ошибка рекламы: " + str(error)
+	show_message(msg, 3.0)
+	push_error(msg)
+
+func _on_ad_closed():
+	_ad_requested = false
+	show_message("Реклама закрыта. Попробуйте снова.", 2.5)
+
+func _proceed_to_raid():
+	Globals.add_food(-5)
+	Globals.add_fuel(-3)
+	get_tree().change_scene_to_file("res://Raid.tscn")
+
+# === ОСТАЛЬНОЙ КОД (без изменений) ===
 
 func update_labels():
 	if not Globals:
@@ -58,25 +116,6 @@ func update_labels():
 	if water_label: water_label.text = "Вода: " + str(Globals.Water)
 	if base_hp_label: base_hp_label.text = "Прочность базы: " + str(Globals.BaseHP)
 	if survivors_label: survivors_label.text = "Выжившие: " + str(Globals.Survivors)
-
-func _add_background_to_labels():
-	var labels = [food_label, meds_label, ammo_label, metal_label, fuel_label, water_label, base_hp_label, survivors_label]
-	for label in labels:
-		if not label or label.get_child_count() > 0:
-			continue
-		var panel = Panel.new()
-		panel.name = "LabelBackground"
-		panel.add_theme_color_override("panel", Color(0, 0, 0, 0.15))
-		label.add_child(panel)
-		panel.anchor_left = 0.0
-		panel.anchor_top = 0.0
-		panel.anchor_right = 1.0
-		panel.anchor_bottom = 1.0
-		panel.offset_left = -6
-		panel.offset_top = -3
-		panel.offset_right = -6
-		panel.offset_bottom = -3
-		panel.z_index = -1
 
 func _on_area_hover(area: Area2D, entered: bool):
 	var sprite = area.get_parent()
@@ -99,20 +138,6 @@ func _click_flash(sprite: Sprite2D):
 	await get_tree().create_timer(0.1).timeout
 	sprite.scale = Vector2(1, 1)
 	sprite.modulate = Color(1, 1, 1)
-
-# === КЛИКИ ===
-
-func _on_Raid_area_input_event(_viewport, event, _shape_idx):
-	if event is InputEventMouseButton and event.pressed:
-		if Globals.Survivors <= 0:
-			show_message("Нет выживших! Невозможно отправиться в рейд.")
-			return
-		if Globals.Food < 5 or Globals.Fuel < 3:
-			show_message("Недостаточно еды или топлива для вылазки!")
-			return
-		Globals.add_food(-5)
-		Globals.add_fuel(-3)
-		get_tree().change_scene_to_file("res://Raid.tscn")
 
 func _on_Medical_area_input_event(_viewport, event: InputEvent, _shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -143,7 +168,6 @@ func _on_Water_area_input_event(_viewport, event: InputEvent, _shape_idx):
 		Globals.add_water(1)
 		_click_flash($Water)
 
-# 🔫 Боеприпасы: тратим металл, получаем патроны
 func _on_Weapon_area_input_event(_viewport, event: InputEvent, _shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		if Globals.Metal <= 0:
@@ -153,7 +177,7 @@ func _on_Weapon_area_input_event(_viewport, event: InputEvent, _shape_idx):
 		Globals.add_ammo(1)
 		_click_flash($Weapon)
 
-# === СИСТЕМА СООБЩЕНИЙ (как в рейде) ===
+# === СИСТЕМА СООБЩЕНИЙ ===
 
 func show_message(text: String, duration: float = MESSAGE_DURATION):
 	if _message_timer:
