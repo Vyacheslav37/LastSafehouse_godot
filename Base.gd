@@ -3,7 +3,7 @@ extends Node2D
 
 const MESSAGE_DURATION := 2.0
 # Используйте тестовый ID при разработке!
-const YANDEX_INTERSTITIAL_ID := "R-M-DEMO-interstitial"
+const YANDEX_INTERSTITIAL_ID := "R-M-17620744-1"
 # Перед публикацией замените на: const YANDEX_INTERSTITIAL_ID := "R-M-17620744-1"
 
 @onready var food_label = get_node_or_null("CanvasLayer/InfoBackground/VBoxContainer/FoodLabel")

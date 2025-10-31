@@ -28,7 +28,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/yandex_interstitial/plugin.cfg")
+enabled=PackedStringArray("res://addons/GodotAndroidYandexAds/plugin.cfg")
 
 [editor_settings]
 
