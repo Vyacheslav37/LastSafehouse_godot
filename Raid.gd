@@ -219,3 +219,7 @@ func _on_message_timeout():
 		_current_message.queue_free()
 		_current_message = null
 	_message_timer = null
+
+
+#adb logcat -s Godot
+#adb logcat -s Godot:YandexInterstitial

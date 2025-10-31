@@ -1,9 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://7vr6kwpocvl4"]
+[gd_scene load_steps=8 format=3 uid="uid://7vr6kwpocvl4"]
 
 [ext_resource type="Texture2D" uid="uid://cs8vihtjgy83v" path="res://images/zombie1.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://icc2gihcj1wh" path="res://images/background_rade.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://oefdromxm2ax" path="res://images/zombie2.png" id="3"]
-[ext_resource type="Script" uid="uid://cwrr2vs7o055b" path="res://Raid.gd" id="4"]
 [ext_resource type="Texture2D" uid="uid://b3fubdee8yt2s" path="res://images/GO_BASE.png" id="5_rhms3"]
 
 [sub_resource type="RectangleShape2D" id="1"]
@@ -16,7 +15,6 @@ size = Vector2(120, 250)
 size = Vector2(107, 181)
 
 [node name="Raid" type="Node2D"]
-script = ExtResource("4")
 
 [node name="Background" type="Sprite2D" parent="."]
 texture = ExtResource("2")
