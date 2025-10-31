@@ -155,3 +155,5 @@ Icon?
 *.bak
 *.old
 *.orig
+LastSafehouse_android/lib/arm64-v8a/libgodot_android.so
+LastSafehouse_android/lib/arm64-v8a/libc++_shared.so
