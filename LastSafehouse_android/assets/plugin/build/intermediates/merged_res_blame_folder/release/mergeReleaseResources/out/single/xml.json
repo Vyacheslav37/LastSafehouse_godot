@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.mygame.lastsafe-release-37:/xml/godot_provider_paths.xml",
+        "source": "com.mygame.lastsafe-jetified-godot-4.4.1.stable-9:/xml/godot_provider_paths.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/xml/debug_panel_file_paths.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/xml/debug_panel_file_paths.xml"
+    }
+]

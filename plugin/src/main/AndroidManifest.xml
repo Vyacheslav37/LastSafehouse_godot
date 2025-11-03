@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Разрешение на рекламный ID (рекомендуется Yandex) -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+
+    <application>
+
+        <!-- РЕГИСТРИРУЕМ ПЛАГИН -->
+        <meta-data
+            android:name="org.godotengine.plugin.v2.LastSafeYandexAds"
+            android:value="com.mygame.lastsafe.YandexAdsPlugin" />
+
+        <!-- УБРАНО: com.yandex.mobile.ads.AUTOMATIC_SDK_INITIALIZATION -->
+        <!-- → SDK инициализируется автоматически -->
+
+    </application>
+</manifest>

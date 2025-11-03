@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "com.mygame.lastsafe-release-37:/drawable-ldpi-v4/ic_call_decline_low.png",
+        "source": "com.mygame.lastsafe-core-1.13.1-15:/drawable-ldpi-v4/ic_call_decline_low.png"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/drawable-ldpi-v4/ic_call_answer.png",
+        "source": "com.mygame.lastsafe-core-1.13.1-15:/drawable-ldpi-v4/ic_call_answer.png"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/drawable-ldpi-v4/ic_call_answer_video.png",
+        "source": "com.mygame.lastsafe-core-1.13.1-15:/drawable-ldpi-v4/ic_call_answer_video.png"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/drawable-ldpi-v4/monetization_ads_internal_instream_trademark_icon.png",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/drawable-ldpi-v4/monetization_ads_internal_instream_trademark_icon.png"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/drawable-ldpi-v4/monetization_ads_internal_instream_ic_sound_off_v2_focused.png",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/drawable-ldpi-v4/monetization_ads_internal_instream_ic_sound_off_v2_focused.png"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/drawable-ldpi-v4/ic_call_decline.png",
+        "source": "com.mygame.lastsafe-core-1.13.1-15:/drawable-ldpi-v4/ic_call_decline.png"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/drawable-ldpi-v4/ic_call_answer_low.png",
+        "source": "com.mygame.lastsafe-core-1.13.1-15:/drawable-ldpi-v4/ic_call_answer_low.png"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/drawable-ldpi-v4/monetization_ads_internal_instream_ic_sound_on_v2_focused.png",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/drawable-ldpi-v4/monetization_ads_internal_instream_ic_sound_on_v2_focused.png"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/drawable-ldpi-v4/ic_call_answer_video_low.png",
+        "source": "com.mygame.lastsafe-core-1.13.1-15:/drawable-ldpi-v4/ic_call_answer_video_low.png"
+    }
+]

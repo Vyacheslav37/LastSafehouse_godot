@@ -223,3 +223,8 @@ func _on_message_timeout():
 
 #adb logcat -s Godot
 #adb logcat -s Godot:YandexInterstitial
+# demo‑interstitial‑yandex
+
+# rmdir /s /q "C:\Users\vf\Documents\LastSafehouse_godot\.godot"
+#adb logcat | findstr -i "yandex"
+#adb logcat *:S YandexAds

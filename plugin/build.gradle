@@ -1,0 +1,43 @@
+plugins {
+    id 'com.android.library' version '8.7.0'
+    id 'org.jetbrains.kotlin.android' version '1.9.24'
+}
+
+android {
+    namespace 'com.mygame.lastsafe'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+dependencies {
+    implementation "org.godotengine:godot:4.4.1.stable"
+    implementation 'com.yandex.android:mobileads:7.16.1'
+    implementation 'androidx.annotation:annotation:1.7.0'  // ← для @NonNull
+}

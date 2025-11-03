@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "com.mygame.lastsafe-release-37:/mipmap-xhdpi-v4/icon_background.png",
+        "source": "com.mygame.lastsafe-jetified-godot-4.4.1.stable-9:/mipmap-xhdpi-v4/icon_background.png"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/mipmap-xhdpi-v4/icon.png",
+        "source": "com.mygame.lastsafe-jetified-godot-4.4.1.stable-9:/mipmap-xhdpi-v4/icon.png"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/mipmap-xhdpi-v4/icon_foreground.png",
+        "source": "com.mygame.lastsafe-jetified-godot-4.4.1.stable-9:/mipmap-xhdpi-v4/icon_foreground.png"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/mipmap-xhdpi-v4/icon_monochrome.png",
+        "source": "com.mygame.lastsafe-jetified-godot-4.4.1.stable-9:/mipmap-xhdpi-v4/icon_monochrome.png"
+    }
+]

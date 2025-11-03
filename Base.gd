@@ -1,10 +1,7 @@
-#R-M-17620744-1
 extends Node2D
 
 const MESSAGE_DURATION := 2.0
-# Используйте тестовый ID при разработке!
-const YANDEX_INTERSTITIAL_ID := "R-M-17620744-1"
-# Перед публикацией замените на: const YANDEX_INTERSTITIAL_ID := "R-M-17620744-1"
+const YANDEX_BLOCK_ID := "R-M-DEMO-interstitial"  # ← ТЕСТОВЫЙ ID YANDEX
 
 @onready var food_label = get_node_or_null("CanvasLayer/InfoBackground/VBoxContainer/FoodLabel")
 @onready var meds_label = get_node_or_null("CanvasLayer/InfoBackground/VBoxContainer/MedsLabel")
@@ -17,45 +14,16 @@ const YANDEX_INTERSTITIAL_ID := "R-M-17620744-1"
 
 @onready var hover_sound = preload("res://sounds/hover_click.ogg")
 @onready var click_sound = preload("res://sounds/item_click.ogg")
+@onready var yandex_ads = get_tree().current_scene.get_node("YandexAds")  # ← Прямая ссылка на узел в сцене
 
 var sfx_hover: AudioStreamPlayer
 var sfx_click: AudioStreamPlayer
 var _current_message: Control = null
 var _message_timer: SceneTreeTimer = null
-var _is_ad_in_progress := false
-var _is_sdk_ready := false
-
-# Укажи package name, который зарегистрирован в Yandex Ads
-const YANDEX_PACKAGE_NAME := "com.mygame.LastSafehouse"
-
-func check_package_name():
-	var device_package := ""
-	
-	if OS.has_feature("Android") or OS.has_feature("iOS"):
-		if Engine.has_singleton("YandexInterstitial"):
-			var ads = Engine.get_singleton("YandexInterstitial")
-			# Вызываем метод из Java-плагина (Android) или аналогичный для iOS
-			device_package = ads.getPackageName()
-		else:
-			print("❌ Синглтон YandexInterstitial не найден. Плагин не активен или платформа не поддерживается.")
-			show_message("❌ YandexInterstitial не найден. Реклама не будет работать.", 4.0)
-			return
-	else:
-		# ПК/редактор: ставим фиктивное имя, чтобы код не падал
-		device_package = "org.godotengine.editor"
-
-	if device_package != YANDEX_PACKAGE_NAME:
-		print("❌ Package name не совпадает с Yandex Ads!")
-		print("   Текущий:", device_package)
-		print("   Ожидаемый:", YANDEX_PACKAGE_NAME)
-		show_message("❌ Package name не совпадает с Yandex Ads!", 4.0)
-	else:
-		print("✅ Package name совпадает с Yandex Ads:", device_package)
 
 
 func _ready():
-	update_labels()
-	check_package_name()
+	# Инициализация звуков
 	sfx_hover = AudioStreamPlayer.new()
 	sfx_hover.name = "SFX_Hover"
 	add_child(sfx_hover)
@@ -68,6 +36,7 @@ func _ready():
 	dummy_player.name = "AudioDummy"
 	add_child(dummy_player)
 
+	# Подключение событий наведения
 	for area in get_tree().get_nodes_in_group("interactables"):
 		if not area.is_connected("mouse_entered", Callable(self, "_on_area_hover")):
 			area.connect("mouse_entered", Callable(self, "_on_area_hover").bind(area, true))
@@ -76,22 +45,39 @@ func _ready():
 
 	update_labels()
 
-	show_message("🔍 Проверка наличия синглтона YandexInterstitial...", 2.0)
-	if Engine.has_singleton("YandexInterstitial"):
-		show_message("✅ Синглтон YandexInterstitial НАЙДЕН", 2.0)
-		var ads = Engine.get_singleton("YandexInterstitial")
-		show_message("🔌 Подключение сигнала onDebugMessage...", 2.0)
-		if not ads.is_connected("onDebugMessage", Callable(self, "_on_yandex_debug")):
-			ads.connect("onDebugMessage", Callable(self, "_on_yandex_debug"))
-			show_message("✅ Сигнал onDebugMessage подключён", 2.0)
-		else:
-			show_message("⚠️ Сигнал onDebugMessage уже подключён", 2.0)
-		show_message("🚀 Вызов ads.init()...", 2.0)
-		ads.init()
-	else:
-		show_message("❌ Синглтон YandexInterstitial НЕ НАЙДЕН!", 3.0)
-		show_message("❗ Реклама недоступна. Причина: плагин не загружен.", 3.0)
-		show_message("🔧 Проверьте: 1) Custom Build, 2) Plugins в экспорте, 3) package name", 4.0)
+	# Запуск рекламы после первого кадра (только на Android)
+	if OS.get_name() == "Android":
+		await get_tree().process_frame
+		_try_show_startup_ad()
+
+
+func _try_show_startup_ad():
+	if not yandex_ads:
+		show_message("YandexAds: обёртка не найдена", 2.0)
+		return
+
+	show_message("Загрузка рекламы...", 2.0)
+
+	yandex_ads.interstitial_loaded.connect(_on_interstitial_loaded)
+	yandex_ads.interstitial_failed.connect(_on_interstitial_failed)
+	yandex_ads.interstitial_dismissed.connect(_on_interstitial_closed)
+
+	yandex_ads.load_interstitial(YANDEX_BLOCK_ID)
+
+
+func _on_interstitial_loaded():
+	show_message("Реклама загружена. Показываем...", 1.0)
+	yandex_ads.show_interstitial()
+
+
+func _on_interstitial_failed(error: String):
+	show_message("Ошибка рекламы: %s" % error, 3.0)
+
+
+func _on_interstitial_closed():
+	# Реклама закрыта — игра продолжается
+	pass
+
 
 func _process(_delta):
 	if not Globals:
@@ -101,11 +87,8 @@ func _process(_delta):
 		Globals.Food -= 100
 	update_labels()
 
-func _on_yandex_debug(msg: String):
-	print("YANDEX DEBUG:", msg)
-	if msg.find("✅ Yandex SDK initialized") != -1:
-		_is_sdk_ready = true
-		show_message("✅ SDK готов к работе", 1.0)
+
+# === КЛИКИ (без изменений) ===
 
 func _on_Raid_area_input_event(_viewport, event, _shape_idx):
 	if event is InputEventMouseButton and event.pressed:
@@ -115,65 +98,15 @@ func _on_Raid_area_input_event(_viewport, event, _shape_idx):
 		if Globals.Food < 5 or Globals.Fuel < 3:
 			show_message("Недостаточно еды или топлива для вылазки!")
 			return
+		Globals.add_food(-5)
+		Globals.add_fuel(-3)
+		show_message("Переход в рейд...", 1.0)
+		get_tree().change_scene_to_file("res://Raid.tscn")
 
-		if Engine.has_singleton("YandexInterstitial"):
-			if not _is_sdk_ready:
-				show_message("⏳ SDK ещё не готов. Подождите...", 2.0)
-				return
-			if _is_ad_in_progress:
-				show_message("⏳ Реклама уже идёт...")
-				return
-
-			_is_ad_in_progress = true
-			var ads = Engine.get_singleton("YandexInterstitial")
-
-			if ads.is_connected("onInterstitialLoaded", Callable(self, "_on_interstitial_loaded")):
-				ads.disconnect("onInterstitialLoaded", Callable(self, "_on_interstitial_loaded"))
-			if ads.is_connected("onInterstitialError", Callable(self, "_on_interstitial_error")):
-				ads.disconnect("onInterstitialError", Callable(self, "_on_interstitial_error"))
-			if ads.is_connected("onInterstitialClosed", Callable(self, "_on_interstitial_closed")):
-				ads.disconnect("onInterstitialClosed", Callable(self, "_on_interstitial_closed"))
-
-			ads.connect("onInterstitialLoaded", Callable(self, "_on_interstitial_loaded"), CONNECT_ONE_SHOT | CONNECT_DEFERRED)
-			ads.connect("onInterstitialError", Callable(self, "_on_interstitial_error"), CONNECT_ONE_SHOT | CONNECT_DEFERRED)
-			ads.connect("onInterstitialClosed", Callable(self, "_on_interstitial_closed"), CONNECT_ONE_SHOT | CONNECT_DEFERRED)
-
-			show_message("⏳ Загрузка рекламы перед походом...", 3.0)
-			ads.loadInterstitial(YANDEX_INTERSTITIAL_ID)
-			return
-		else:
-			if OS.has_feature("editor"):
-				_proceed_to_raid()
-			else:
-				show_message("❗ Рейд недоступен без рекламы.", 3.0)
-
-func _on_interstitial_loaded():
-	show_message("✅ Реклама загружена! Показываем...", 1.5)
-	await get_tree().create_timer(1.5).timeout
-	if Engine.has_singleton("YandexInterstitial"):
-		var ads = Engine.get_singleton("YandexInterstitial")
-		ads.showInterstitial()
-
-func _on_interstitial_error(error: String = "Не удалось загрузить рекламу"):
-	_is_ad_in_progress = false
-	show_message("❌ Ошибка рекламы: " + error, 3.0)
-	if OS.has_feature("editor"):
-		_proceed_to_raid()
-
-func _on_interstitial_closed():
-	_is_ad_in_progress = false
-	_proceed_to_raid()
-
-func _proceed_to_raid():
-	Globals.add_food(-5)
-	Globals.add_fuel(-3)
-	show_message("➡️ Переход в рейд...", 1.0)
-	await get_tree().create_timer(1.0).timeout
-	get_tree().change_scene_to_file("res://Raid.tscn")
 
 func update_labels():
 	if not Globals:
-		show_message("⚠️ Globals не найден!", 2.0)
+		show_message("Globals не найден!", 2.0)
 		return
 	if food_label: food_label.text = "Еда: " + str(Globals.Food)
 	if meds_label: meds_label.text = "Медицина: " + str(Globals.Meds)
@@ -183,6 +116,7 @@ func update_labels():
 	if water_label: water_label.text = "Вода: " + str(Globals.Water)
 	if base_hp_label: base_hp_label.text = "Прочность базы: " + str(Globals.BaseHP)
 	if survivors_label: survivors_label.text = "Выжившие: " + str(Globals.Survivors)
+
 
 func _on_area_hover(area: Area2D, entered: bool):
 	var sprite = area.get_parent()
@@ -194,6 +128,7 @@ func _on_area_hover(area: Area2D, entered: bool):
 		else:
 			sprite.modulate = Color(1, 1, 1)
 
+
 func _click_flash(sprite: Sprite2D):
 	if not sprite: return
 	sprite.scale = Vector2(1.05, 1.05)
@@ -203,6 +138,7 @@ func _click_flash(sprite: Sprite2D):
 	await get_tree().create_timer(0.1).timeout
 	sprite.scale = Vector2(1, 1)
 	sprite.modulate = Color(1, 1, 1)
+
 
 func _on_Medical_area_input_event(_viewport, event: InputEvent, _shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -242,6 +178,9 @@ func _on_Weapon_area_input_event(_viewport, event: InputEvent, _shape_idx):
 		Globals.add_ammo(1)
 		_click_flash($Weapon)
 
+
+# === СИСТЕМА СООБЩЕНИЙ ===
+
 func show_message(text: String, duration: float = MESSAGE_DURATION):
 	if _message_timer:
 		if _message_timer.timeout.is_connected(_on_base_message_timeout):
@@ -251,7 +190,7 @@ func show_message(text: String, duration: float = MESSAGE_DURATION):
 		_current_message.queue_free()
 		_current_message = null
 
-	var canvas = get_tree().current_scene.get_node_or_null("CanvasLayer")
+	var canvas = get_node_or_null("CanvasLayer")
 	if not canvas:
 		return
 
@@ -282,6 +221,7 @@ func show_message(text: String, duration: float = MESSAGE_DURATION):
 	_current_message = panel
 	_message_timer = get_tree().create_timer(duration)
 	_message_timer.timeout.connect(_on_base_message_timeout)
+
 
 func _on_base_message_timeout():
 	if _current_message and _current_message.get_parent():

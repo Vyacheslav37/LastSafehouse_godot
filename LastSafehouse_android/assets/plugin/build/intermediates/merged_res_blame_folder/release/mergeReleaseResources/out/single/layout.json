@@ -1,0 +1,290 @@
+[
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/debug_panel_item_ad_units.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/debug_panel_item_ad_units.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/activity_debug.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/activity_debug.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/select_dialog_item_material.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/select_dialog_item_material.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/ime_secondary_split_test_activity.xml",
+        "source": "com.mygame.lastsafe-core-1.13.1-15:/layout/ime_secondary_split_test_activity.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_list_menu_item_layout.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_list_menu_item_layout.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/debug_panel_item_divider.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/debug_panel_item_divider.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/status_bar_ongoing_event_progress_bar.xml",
+        "source": "com.mygame.lastsafe-jetified-godot-4.4.1.stable-9:/layout/status_bar_ongoing_event_progress_bar.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/debug_panel_item_action_button.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/debug_panel_item_action_button.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_outstream_controls_fullscreen_content_v1.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_outstream_controls_fullscreen_content_v1.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_alert_dialog_material.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_alert_dialog_material.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_dialog_title_material.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_dialog_title_material.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_expanded_menu_layout.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_expanded_menu_layout.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_rewarded_close_verification.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_rewarded_close_verification.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_list_menu_item_radio.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_list_menu_item_radio.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_screen_simple.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_screen_simple.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_native_popup_item.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_native_popup_item.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_action_bar_title_item.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_action_bar_title_item.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_native_interstitial_landscape_horizontal_media.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_native_interstitial_landscape_horizontal_media.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_action_mode_close_item_material.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_action_mode_close_item_material.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_cascading_menu_item_layout.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_cascading_menu_item_layout.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_divkit.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_divkit.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/godot_app_layout.xml",
+        "source": "com.mygame.lastsafe-jetified-godot-4.4.1.stable-9:/layout/godot_app_layout.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/support_simple_spinner_dropdown_item.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/support_simple_spinner_dropdown_item.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/downloading_expansion.xml",
+        "source": "com.mygame.lastsafe-jetified-godot-4.4.1.stable-9:/layout/downloading_expansion.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_tooltip.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_tooltip.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_native_interstitial_portrait.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_native_interstitial_portrait.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_multibanner_controls.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_multibanner_controls.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/debug_panel_item_switch.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/debug_panel_item_switch.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_search_dropdown_item_icons_2line.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_search_dropdown_item_icons_2line.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/custom_dialog.xml",
+        "source": "com.mygame.lastsafe-core-1.13.1-15:/layout/custom_dialog.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_native_interstitial_close.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_native_interstitial_close.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_outstream_controls_default.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_outstream_controls_default.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_native_rewarded_portrait.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_native_rewarded_portrait.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_feed_progressbar.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_feed_progressbar.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_action_menu_layout.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_action_menu_layout.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_popup_menu_item_layout.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_popup_menu_item_layout.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_screen_toolbar.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_screen_toolbar.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_list_menu_item_checkbox.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_list_menu_item_checkbox.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_native_interstitial_landscape_sponsored_container.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_native_interstitial_landscape_sponsored_container.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_activity_chooser_view_list_item.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_activity_chooser_view_list_item.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_list_menu_item_icon.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_list_menu_item_icon.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_adtune_container.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_adtune_container.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/notification_template_part_time.xml",
+        "source": "com.mygame.lastsafe-core-1.13.1-15:/layout/notification_template_part_time.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/debug_panel_item_mediation_adapter.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/debug_panel_item_mediation_adapter.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_native_rewarded_landscape.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_native_rewarded_landscape.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_instream_skin_v1.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_instream_skin_v1.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_alert_dialog_title_material.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_alert_dialog_title_material.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_native_interstitial_landscape_vetrical_media.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_native_interstitial_landscape_vetrical_media.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_action_mode_bar.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_action_mode_bar.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_action_bar_up_container.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_action_bar_up_container.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_screen_simple_overlay_action_mode.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_screen_simple_overlay_action_mode.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_feed_item.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_feed_item.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/snackbar.xml",
+        "source": "com.mygame.lastsafe-jetified-godot-4.4.1.stable-9:/layout/snackbar.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_select_dialog_material.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_select_dialog_material.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/deubg_panel_item_key_value.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/deubg_panel_item_key_value.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_outstream_controls_app_install.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_outstream_controls_app_install.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_native_rewarded_controls.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_native_rewarded_controls.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_popup_menu_header_item_layout.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_popup_menu_header_item_layout.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_action_menu_item_layout.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_action_menu_item_layout.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/select_dialog_singlechoice_material.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/select_dialog_singlechoice_material.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/select_dialog_multichoice_material.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/select_dialog_multichoice_material.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_screen_content_include.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_screen_content_include.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_alert_dialog_button_bar_material.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_alert_dialog_button_bar_material.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_native_interstitial_content.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_native_interstitial_content.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/notification_template_part_chronometer.xml",
+        "source": "com.mygame.lastsafe-core-1.13.1-15:/layout/notification_template_part_chronometer.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_search_view.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_search_view.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/debug_panel_toolbar.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/debug_panel_toolbar.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/ime_base_split_test_activity.xml",
+        "source": "com.mygame.lastsafe-core-1.13.1-15:/layout/ime_base_split_test_activity.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/debug_panel_item_ad_unit.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/debug_panel_item_ad_unit.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/deubg_panel_item_header.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/deubg_panel_item_header.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/abc_activity_chooser_view.xml",
+        "source": "com.mygame.lastsafe-appcompat-1.6.1-6:/layout/abc_activity_chooser_view.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/layout/monetization_ads_internal_instream_skin_v2.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/layout/monetization_ads_internal_instream_skin_v2.xml"
+    }
+]

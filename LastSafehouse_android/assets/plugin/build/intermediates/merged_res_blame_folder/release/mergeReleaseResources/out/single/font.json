@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "com.mygame.lastsafe-release-37:/font/monetization_ads_internal_font_medium.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/font/monetization_ads_internal_font_medium.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/font/monetization_ads_internal_font_light.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/font/monetization_ads_internal_font_light.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/font/monetization_ads_internal_font_text_regular_italic.ttf",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/font/monetization_ads_internal_font_text_regular_italic.ttf"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/font/monetization_ads_internal_font_text_light.ttf",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/font/monetization_ads_internal_font_text_light.ttf"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/font/monetization_ads_internal_font_text_bold.ttf",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/font/monetization_ads_internal_font_text_bold.ttf"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/font/monetization_ads_internal_font_text_medium.ttf",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/font/monetization_ads_internal_font_text_medium.ttf"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/font/monetization_ads_internal_font_regular.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/font/monetization_ads_internal_font_regular.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/font/monetization_ads_internal_font_text_regular.ttf",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/font/monetization_ads_internal_font_text_regular.ttf"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/font/monetization_ads_internal_font_bold.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/font/monetization_ads_internal_font_bold.xml"
+    }
+]

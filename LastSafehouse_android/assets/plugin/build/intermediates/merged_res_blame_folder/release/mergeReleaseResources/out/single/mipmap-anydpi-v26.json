@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.mygame.lastsafe-release-37:/mipmap-anydpi-v26/themed_icon.xml",
+        "source": "com.mygame.lastsafe-jetified-godot-4.4.1.stable-9:/mipmap-anydpi-v26/themed_icon.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/mipmap-anydpi-v26/icon.xml",
+        "source": "com.mygame.lastsafe-jetified-godot-4.4.1.stable-9:/mipmap-anydpi-v26/icon.xml"
+    }
+]

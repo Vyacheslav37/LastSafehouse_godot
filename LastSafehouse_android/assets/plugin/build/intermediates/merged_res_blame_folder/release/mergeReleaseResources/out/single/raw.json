@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "com.mygame.lastsafe-release-37:/raw/monetization_ads_keep.xml",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/raw/monetization_ads_keep.xml"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/raw/monetization_ads_bundled_cert.crt",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/raw/monetization_ads_bundled_cert.crt"
+    },
+    {
+        "merged": "com.mygame.lastsafe-release-37:/raw/monetization_ads_sdkinternalca.crt",
+        "source": "com.mygame.lastsafe-jetified-mobileads-7.16.1-4:/raw/monetization_ads_sdkinternalca.crt"
+    }
+]

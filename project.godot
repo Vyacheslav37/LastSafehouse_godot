@@ -10,14 +10,15 @@ config_version=5
 
 [application]
 
-config/name="Last Safehouse (Godot)"
+config/name="Last Safehouse"
 config/description="Converted minimal project from GDevelop data - placeholders used for images."
-run/main_scene="res://Base.tscn"
+run/main_scene="uid://fprx67vsge5h"
 config/features=PackedStringArray("4.4")
 
 [autoload]
 
 Globals="*res://Globals.gd"
+YandexAds="*res://YandexAds.gd"
 
 [display]
 
@@ -28,7 +29,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray()
+enabled=PackedStringArray("res://addons/LastSafeYandexAds/plugin.cfg")
 
 [editor_settings]
 

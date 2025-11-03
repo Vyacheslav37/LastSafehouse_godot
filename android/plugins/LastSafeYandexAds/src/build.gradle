@@ -1,0 +1,25 @@
+// res://android/plugins/LastSafeYandexAds/build.gradle
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+android {
+    namespace 'com.mygame.lastsafe'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 21
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+    implementation "org.godotengine:godot:4.4.1.stable"
+    implementation 'com.yandex.android:mobile-ads:7.16.1'
+}

@@ -1,0 +1,10 @@
+<!-- res://android/plugins/LastSafeYandexAds/src/main/AndroidManifest.xml -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.mygame.lastsafe">
+    
+    <application>
+        <meta-data
+            android:name="org.godotengine.plugin.v2.LastSafeYandexAds"
+            android:value="com.mygame.lastsafe.LastSafeYandexAds" />
+    </application>
+</manifest>
