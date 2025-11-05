@@ -26,6 +26,7 @@ Assets/AssetStoreTools*
 *.pidb.meta
 *.pdb.meta
 *.mdb.meta
+<<<<<<< Updated upstream
 
 # Unity3D generated asset files
 *.asset.meta
@@ -102,3 +103,80 @@ OcclusionCullingData/
 !Assets/AddressableAssetsData/AssetGroups/*.asset
 !Assets/AddressableAssetsData/DataBuilders/*.asset
 
+=======
+
+# Unity3D generated asset files
+*.asset.meta
+*.mat.meta
+*.anim.meta
+*.controller.meta
+*.overrideController.meta
+*.prefab.meta
+*.physicsMaterial2D.meta
+*.physicsMaterial.meta
+*.mask.meta
+*.brush.meta
+*.flare.meta
+*.guiskin.meta
+*.giparams.meta
+*.renderTexture.meta
+*.spriteatlas.meta
+*.terrainlayer.meta
+*.cubemap.meta
+*.lightingdata.asset.meta
+*.lightingsettings.asset.meta
+
+# Build results
+/[Bb]uild/
+/[Bb]uilds/
+*.apk
+*.unitypackage
+*.app
+*.exe
+*.dll
+*.pdb
+*.ipa
+*.dSYM/
+*.dsym.tar.bz2
+
+# Crashlytics generated files
+*.crashlytics
+
+# Visual Studio cache
+.vs/
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+
+# Local History for Unity
+History/
+
+# Memory capture files
+*.raw
+*.memcap
+
+# Occlusion Culling
+OcclusionCullingData/
+
+# Addressables
+[AA]ssets/[AA]ddressable[AA]ssets[DD]ata/*
+!Assets/AddressableAssetsData/AssetGroupTemplates/*.asset
+!Assets/AddressableAssetsData/DefaultObject.asset
+!Assets/AddressableAssetsData/AssetGroups/*.asset
+!Assets/AddressableAssetsData/DataBuilders/*.asset
+>>>>>>> Stashed changes
