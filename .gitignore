@@ -27,6 +27,9 @@ Assets/AssetStoreTools*
 *.pdb.meta
 *.mdb.meta
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
 
 # Unity3D generated asset files
 *.asset.meta
@@ -101,6 +104,7 @@ OcclusionCullingData/
 !Assets/AddressableAssetsData/AssetGroupTemplates/*.asset
 !Assets/AddressableAssetsData/DefaultObject.asset
 !Assets/AddressableAssetsData/AssetGroups/*.asset
+<<<<<<< Updated upstream
 !Assets/AddressableAssetsData/DataBuilders/*.asset
 
 =======
@@ -178,5 +182,8 @@ OcclusionCullingData/
 !Assets/AddressableAssetsData/AssetGroupTemplates/*.asset
 !Assets/AddressableAssetsData/DefaultObject.asset
 !Assets/AddressableAssetsData/AssetGroups/*.asset
+!Assets/AddressableAssetsData/DataBuilders/*.asset
+>>>>>>> Stashed changes
+=======
 !Assets/AddressableAssetsData/DataBuilders/*.asset
 >>>>>>> Stashed changes
