@@ -1,0 +1,39 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+run/main_scene="res://Base.tscn"
+config/features=PackedStringArray("4.4")
+
+[autoload]
+
+Globals="*res://Globals.gd"
+YandexSDK="*res://addons/godot-yandex-games-sdk/yandex_sdk.gd"
+AdManager="*res://AdManager.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="viewport"
+window/stretch/aspect="expand"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot-yandex-games-sdk/plugin.cfg")
+
+[editor_settings]
+
+run/disable_audio=true
+
+[rendering]
+
+textures/vram_compression/import_etc2_astc=true

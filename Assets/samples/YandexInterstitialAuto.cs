@@ -10,13 +10,15 @@ public class YandexInterstitialAuto : MonoBehaviour
     private bool isGameBlocked = true;
 
     [Header("Ad Settings")]
-    [SerializeField] private string adUnitId = "demo-interstitial-yandex"; // ← ТВОЙ ID!
+    [SerializeField] private string adUnitId = "demo-interstitial-yandex";
 
     private static YandexInterstitialAuto instance;
 
     private void Awake()
     {
-        // Синглтон
+        // СБРАСЫВАЕМ ПРИ КАЖДОМ ЗАПУСКЕ
+        PlayerPrefs.DeleteKey("AdShownThisSession");
+
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
@@ -32,7 +34,7 @@ public class YandexInterstitialAuto : MonoBehaviour
 
     private void Start()
     {
-        if (PlayerPrefs.GetInt("AdShownToday", 0) == 1)
+        if (PlayerPrefs.GetInt("AdShownThisSession", 0) == 1)
         {
             UnlockGame();
             return;
@@ -44,9 +46,7 @@ public class YandexInterstitialAuto : MonoBehaviour
 
     private IEnumerator LoadAndShowAfterFrames(int frames)
     {
-        for (int i = 0; i < frames; i++)
-            yield return null;
-
+        for (int i = 0; i < frames; i++) yield return null;
         RequestAd();
     }
 
@@ -54,12 +54,9 @@ public class YandexInterstitialAuto : MonoBehaviour
     {
         interstitial?.Destroy();
         interstitial = null;
-
         var request = new AdRequestConfiguration.Builder(adUnitId).Build();
         adLoader.LoadAd(request);
     }
-
-    #region Обработчики
 
     private void HandleAdLoaded(object sender, InterstitialAdLoadedEventArgs args)
     {
@@ -83,12 +80,11 @@ public class YandexInterstitialAuto : MonoBehaviour
 
     private void HandleAdDismissed(object sender, System.EventArgs args)
     {
-        PlayerPrefs.SetInt("AdShownToday", 1);
+        PlayerPrefs.SetInt("AdShownThisSession", 1);
         PlayerPrefs.Save();
 
         interstitial?.Destroy();
         interstitial = null;
-
         UnlockGame();
     }
 
@@ -98,15 +94,10 @@ public class YandexInterstitialAuto : MonoBehaviour
         UnlockGame();
     }
 
-    #endregion
-
-    #region Блокировка игры
-
     private void BlockGame()
     {
         isGameBlocked = true;
         Time.timeScale = 0f;
-        // Отключаем ввод
         Input.multiTouchEnabled = false;
     }
 
@@ -119,11 +110,8 @@ public class YandexInterstitialAuto : MonoBehaviour
 
     public static bool IsGameBlocked => instance?.isGameBlocked ?? false;
 
-    #endregion
-
     private void OnDestroy()
     {
-        // УДАЛЕНО Dispose() — НЕТ В SDK!
         interstitial?.Destroy();
     }
 }

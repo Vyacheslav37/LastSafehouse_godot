@@ -5,8 +5,10 @@ using System.Collections;
 
 public class BaseManager : MonoBehaviour
 {
-    public enum ItemType { Garden, Fuel, Medical, Metal, Water, Weapon, Raid }
+    public enum ItemType { Garden, Fuel, Medical, Metal, Water, Weapon, Raid, Zombie, GoBase }
+
     private const float MESSAGE_DURATION = 2.0f;
+    private const float CLICK_COOLDOWN = 0.1f;
 
     [Header("UI Labels — СПИСОК СЛЕВА")]
     public TextMeshProUGUI foodLabel;
@@ -25,19 +27,31 @@ public class BaseManager : MonoBehaviour
     [Header("Sounds")]
     public AudioClip clickSound;
     private AudioSource sfxClick;
+
     private Coroutine messageCoroutine;
+    private float lastClickTime;
 
     public static BaseManager Instance { get; private set; }
 
     private void Awake()
     {
+        // СИНГЛТОН — НАДЁЖНЫЙ
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        // ПОДПИСКА НА ЗАГРУЗКУ СЦЕНЫ
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void Start()
@@ -46,6 +60,7 @@ public class BaseManager : MonoBehaviour
         UpdateLabels();
         if (messagePanel) messagePanel.SetActive(false);
 
+        // Результат рейда
         if (PlayerPrefs.HasKey("RaidResult"))
         {
             string result = PlayerPrefs.GetString("RaidResult");
@@ -54,8 +69,27 @@ public class BaseManager : MonoBehaviour
         }
     }
 
+    // ВЫЗЫВАЕТСЯ ПРИ ЗАГРУЗКЕ ЛЮБОЙ СЦЕНЫ
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "BaseScene")
+        {
+            UpdateLabels();
+        }
+    }
+
+    // ОБНОВЛЕНИЕ ПРИ ВОЗВРАТЕ НА ЭКРАН
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (hasFocus && SceneManager.GetActiveScene().name == "BaseScene")
+        {
+            UpdateLabels();
+        }
+    }
+
     private void Update()
     {
+        // Авто-выжившие за 100 еды
         if (Globals.Food >= 100)
         {
             Globals.AddSurvivors(1);
@@ -66,10 +100,15 @@ public class BaseManager : MonoBehaviour
 
     public void OnItemClicked(Interactable item)
     {
-        if (!item || !item.Sprite) return;
+        if (Time.realtimeSinceStartup - lastClickTime < CLICK_COOLDOWN || !item || !item.Sprite) return;
+        lastClickTime = Time.realtimeSinceStartup;
 
-        StartCoroutine(ClickFlash(item.Sprite));
-        if (clickSound) sfxClick.PlayOneShot(clickSound);
+        // АНИМАЦИЯ ТОЛЬКО НА БАЗЕ
+        if (SceneManager.GetActiveScene().name == "BaseScene")
+        {
+            StartCoroutine(ClickFlash(item.Sprite));
+            if (clickSound) sfxClick.PlayOneShot(clickSound);
+        }
 
         switch (item.itemType)
         {
@@ -120,7 +159,7 @@ public class BaseManager : MonoBehaviour
 
     private IEnumerator ClickFlash(SpriteRenderer sprite)
     {
-        if (!sprite) yield break;
+        if (!sprite || !sprite.gameObject) yield break;
 
         Vector3 original = sprite.transform.localScale;
         sprite.transform.localScale = original * 1.1f;
@@ -128,8 +167,11 @@ public class BaseManager : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(0.08f);
 
-        sprite.transform.localScale = original;
-        sprite.color = Color.white;
+        if (sprite != null && sprite.gameObject != null)
+        {
+            sprite.transform.localScale = original;
+            sprite.color = Color.white;
+        }
     }
 
     public void ShowMessage(string text, float duration = MESSAGE_DURATION)
@@ -142,12 +184,14 @@ public class BaseManager : MonoBehaviour
     {
         if (messagePanel) messagePanel.SetActive(true);
         if (messageText) messageText.text = text;
-        yield return new WaitForSeconds(duration);
+
+        yield return new WaitForSecondsRealtime(duration);
+
         if (messagePanel) messagePanel.SetActive(false);
         messageCoroutine = null;
     }
 
-    private void UpdateLabels()
+    public void UpdateLabels()
     {
         if (foodLabel) foodLabel.text = $"Еда: {Globals.Food}";
         if (medsLabel) medsLabel.text = $"Медицина: {Globals.Meds}";

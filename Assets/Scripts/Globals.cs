@@ -20,10 +20,20 @@ public static class Globals
     public static void AddWater(int amount) => Water = Mathf.Max(0, Water + amount);
     public static void AddSurvivors(int amount) => Survivors = Mathf.Max(0, Survivors + amount);
 
-    // ← ДОБАВЬ ЭТО:
+    // ДОБАВЛЕНО: ДЛЯ РЕЙДА
+    public static void AddBaseHP(int amount) => BaseHP = Mathf.Max(0, BaseHP + amount);
+    public static void SetAmmo(int value) => Ammo = Mathf.Max(0, value);
+
+    // ДОБАВЛЕНО: СБРОС В НАЧАЛЬНЫЕ ЗНАЧЕНИЯ
     public static void ResetAll()
     {
-        Food = 10; Meds = 5; Ammo = 3; Metal = 8;
-        Fuel = 6; Water = 7; BaseHP = 100; Survivors = 3;
+        Food = 10;
+        Meds = 5;
+        Ammo = 3;
+        Metal = 8;
+        Fuel = 6;
+        Water = 7;
+        BaseHP = 100;
+        Survivors = 3;
     }
 }
