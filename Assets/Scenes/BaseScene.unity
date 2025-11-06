@@ -2539,7 +2539,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e134757960dfc484992ca8758828d06a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemType: 0
+  itemType: 9
   Sprite: {fileID: 0}
 --- !u!1 &1749209509
 GameObject:
