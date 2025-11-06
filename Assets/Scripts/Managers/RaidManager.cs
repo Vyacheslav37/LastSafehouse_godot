@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
+using System.Collections.Generic;
 
 public class RaidManager : MonoBehaviour
 {
@@ -16,132 +17,211 @@ public class RaidManager : MonoBehaviour
     public TMP_Text messageText;
 
     private AudioSource sfx;
-    private int ammo, survivors;
+    private int localAmmo, raidSurvivors, baseAmmoBefore;
     private bool started;
     private float lastClickTime;
     private Coroutine messageCoroutine;
 
+    private readonly List<GameObject> aliveZombies = new List<GameObject>();
+
     private void Awake()
     {
+        Debug.Log($"[RaidManager] Awake: Instance = {(Instance != null ? "УЖЕ ЕСТЬ" : "СОЗДАЁТСЯ")}");
         if (Instance != null && Instance != this)
         {
+            Debug.LogWarning("[RaidManager] ДУБЛИКАТ! Уничтожаем.");
             Destroy(gameObject);
             return;
         }
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        Debug.Log("[RaidManager] Синглтон создан. DontDestroyOnLoad.");
 
         sfx = gameObject.AddComponent<AudioSource>();
-        if (messagePanel) messagePanel.SetActive(false);
+        Debug.Log($"[RaidManager] AudioSource добавлен: {sfx != null}");
 
-        // ПОДПИСКА НА ЗАГРУЗКУ СЦЕНЫ
+        if (messagePanel)
+        {
+            messagePanel.SetActive(false);
+            Debug.Log("[RaidManager] messagePanel деактивирован.");
+        }
+        else
+        {
+            Debug.LogWarning("[RaidManager] messagePanel НЕ НАЗНАЧЕН!");
+        }
+
         SceneManager.sceneLoaded += OnSceneLoaded;
+        Debug.Log("[RaidManager] Подписка на sceneLoaded.");
     }
 
     private void OnDestroy()
     {
-        // ОТПИСКА
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        Debug.Log("[RaidManager] Отписка от sceneLoaded. Уничтожен.");
     }
 
-    private void Start() => StartRaid();
+    private void Start()
+    {
+        Debug.Log("[RaidManager] Start() → StartRaid()");
+        StartRaid();
+    }
 
     private void StartRaid()
     {
-        survivors = Mathf.Clamp(Random.Range(1, Globals.Survivors + 1), 1, Globals.Survivors);
-        int costFood = survivors * Random.Range(1, 4);
-        int costFuel = survivors * Random.Range(1, 4);
+        if (started)
+        {
+            Debug.LogWarning("[RaidManager] StartRaid(): Рейд уже запущен!");
+            return;
+        }
+
+        Debug.Log($"[RaidManager] Начало рейда: Выживших = {Globals.Survivors}, Еда = {Globals.Food}, Топливо = {Globals.Fuel}");
+        raidSurvivors = Mathf.Clamp(Random.Range(1, Globals.Survivors + 1), 1, Globals.Survivors);
+        int costFood = raidSurvivors * Random.Range(1, 4);
+        int costFuel = raidSurvivors * Random.Range(1, 4);
 
         Globals.AddFood(-costFood);
         Globals.AddFuel(-costFuel);
-        ammo = Mathf.Min(Globals.Ammo, survivors * 10);
+        Debug.Log($"[RaidManager] Списано: -{costFood} еды, -{costFuel} топлива");
+
+        baseAmmoBefore = Globals.Ammo;
+        localAmmo = Mathf.Min(Globals.Ammo, raidSurvivors * 10);
+        Globals.SetAmmo(Globals.Ammo - localAmmo);
+        Debug.Log($"[RaidManager] Патроны: Было {baseAmmoBefore} → В рейде: {localAmmo} → Осталось в базе: {Globals.Ammo}");
 
         started = true;
+
+        aliveZombies.Clear();
+        var zombies = GameObject.FindGameObjectsWithTag("Zombie");
+        Debug.Log($"[RaidManager] Найдено зомби: {zombies.Length}");
+        foreach (GameObject z in zombies)
+        {
+            if (z != null && z.activeInHierarchy)
+            {
+                aliveZombies.Add(z);
+                Debug.Log($"[RaidManager] Зомби добавлен: {z.name}");
+            }
+        }
+
         UpdateUI();
-        ShowMsg($"Рейд начат: {survivors} выживших | -{costFood} еды, -{costFuel} топлива", 4f);
+        ShowMsg($"Рейд начат: {raidSurvivors} выживших | -{costFood} еды, -{costFuel} топлива", 4f);
     }
 
     private void UpdateUI()
     {
-        int alive = 0;
-        foreach (GameObject z in GameObject.FindGameObjectsWithTag("Zombie"))
-            if (z != null && z.activeInHierarchy) alive++;
+        Debug.Log("[RaidManager] UpdateUI() вызван");
 
-        if (zombieLabel) zombieLabel.text = $"Зомби: {alive}";
-        if (ammoLabel) ammoLabel.text = $"Боеприпасы: {ammo}";
-        if (survivorsLabel) survivorsLabel.text = $"Выживших: {survivors}";
+        if (!zombieLabel) Debug.LogWarning("[RaidManager] zombieLabel = null!");
+        else zombieLabel.text = $"Зомби: {aliveZombies.Count}";
+
+        if (!ammoLabel) Debug.LogWarning("[RaidManager] ammoLabel = null!");
+        else ammoLabel.text = $"Боеприпасы: {localAmmo}";
+
+        if (!survivorsLabel) Debug.LogWarning("[RaidManager] survivorsLabel = null!");
+        else survivorsLabel.text = $"Выживших: {raidSurvivors}";
+
+        Debug.Log($"[RaidManager] UI обновлён: Зомби={aliveZombies.Count}, Патроны={localAmmo}, Выжившие={raidSurvivors}");
     }
 
     public void OnZombieClicked(GameObject zombie)
     {
-        if (!started || Time.realtimeSinceStartup - lastClickTime < 0.1f) return;
+        Debug.Log($"[RaidManager] OnZombieClicked: {zombie.name}");
+
+        if (!started)
+        {
+            Debug.LogWarning("[RaidManager] Рейд не начат!");
+            return;
+        }
+        if (Time.realtimeSinceStartup - lastClickTime < 0.1f)
+        {
+            Debug.LogWarning("[RaidManager] Клик слишком быстро!");
+            return;
+        }
         lastClickTime = Time.realtimeSinceStartup;
 
-        if (ammo <= 0)
+        if (localAmmo <= 0)
         {
+            Debug.Log("[RaidManager] Нет патронов!");
             ShowMsg("Нет патронов! Вернитесь на базу!", 3f);
             return;
         }
 
-        ammo--;
+        if (!aliveZombies.Contains(zombie))
+        {
+            Debug.LogWarning($"[RaidManager] Зомби {zombie.name} уже мёртв или не в списке!");
+            return;
+        }
+
+        localAmmo--;
+        Debug.Log($"[RaidManager] Выстрел: Патроны = {localAmmo}");
         sfx.PlayOneShot(clickSound);
-        StartCoroutine(KillZombie(zombie));
+
+        StartCoroutine(KillZombieWithAnimation(zombie));
+    }
+
+    private IEnumerator KillZombieWithAnimation(GameObject zombie)
+    {
+        var sr = zombie.GetComponent<SpriteRenderer>();
+        if (!sr)
+        {
+            Debug.LogError($"[RaidManager] У {zombie.name} нет SpriteRenderer!");
+            yield break;
+        }
+
+        Debug.Log($"[RaidManager] Анимация смерти: {zombie.name}");
+        Vector3 orig = sr.transform.localScale;
+        sr.transform.localScale *= 1.1f;
+        sr.color = new Color(1.5f, 1.5f, 1.5f);
+        yield return new WaitForSecondsRealtime(0.1f);
+
+        if (sr && zombie)
+        {
+            sr.transform.localScale = orig;
+            sr.color = Color.white;
+        }
+
+        yield return new WaitForSecondsRealtime(0.05f);
+
+        if (zombie)
+        {
+            aliveZombies.Remove(zombie);
+            Debug.Log($"[RaidManager] Зомби уничтожен: {zombie.name} | Осталось: {aliveZombies.Count}");
+            Destroy(zombie);
+        }
+
+        UpdateUI();
+
+        if (aliveZombies.Count == 0)
+        {
+            Debug.Log("[RaidManager] Все зомби убиты → Победа!");
+            StartCoroutine(Victory());
+        }
     }
 
     public void OnGoBaseClicked(GameObject obj)
     {
+        Debug.Log($"[RaidManager] OnGoBaseClicked: {obj.name}");
         if (!started || Time.realtimeSinceStartup - lastClickTime < 0.1f) return;
         lastClickTime = Time.realtimeSinceStartup;
 
         sfx.PlayOneShot(clickSound);
+        Debug.Log("[RaidManager] Отступление!");
         Retreat();
-    }
-
-    private IEnumerator KillZombie(GameObject zombie)
-    {
-        var sr = zombie.GetComponent<SpriteRenderer>();
-        if (sr)
-        {
-            Vector3 orig = sr.transform.localScale;
-            sr.transform.localScale *= 1.1f;
-            sr.color = new Color(1.5f, 1.5f, 1.5f);
-            yield return new WaitForSecondsRealtime(0.1f);
-
-            if (sr && zombie)
-            {
-                sr.transform.localScale = orig;
-                sr.color = Color.white;
-            }
-        }
-
-        yield return new WaitForSecondsRealtime(0.05f);
-        if (zombie) Destroy(zombie);
-        UpdateUI();
-
-        if (CountAliveZombies() == 0)
-            StartCoroutine(Victory());
-    }
-
-    private int CountAliveZombies()
-    {
-        int count = 0;
-        foreach (GameObject z in GameObject.FindGameObjectsWithTag("Zombie"))
-            if (z != null && z.activeInHierarchy) count++;
-        return count;
     }
 
     private IEnumerator Victory()
     {
-        int food = survivors * Random.Range(2, 6);
-        int metal = survivors * Random.Range(1, 5);
-        int rewardAmmo = survivors * Random.Range(1, 4);
+        Debug.Log("[RaidManager] Победа! Расчёт награды...");
+        int food = raidSurvivors * Random.Range(2, 6);
+        int metal = raidSurvivors * Random.Range(1, 5);
+        int rewardAmmo = raidSurvivors * Random.Range(1, 4);
 
         Globals.AddFood(food);
         Globals.AddMetal(metal);
-        Globals.AddAmmo(ammo + rewardAmmo);
-        Globals.AddBaseHP(survivors);
+        Globals.AddAmmo(localAmmo + rewardAmmo);
+        Globals.AddBaseHP(raidSurvivors);
 
+        Debug.Log($"[RaidManager] Награда: +{food} еды, +{metal} металла, +{rewardAmmo} патронов, +{raidSurvivors} HP");
         ShowMsg($"Победа! +{food} еды, +{metal} металла, +{rewardAmmo} патронов", 4f);
         yield return new WaitForSecondsRealtime(4f);
         ReturnToBase();
@@ -149,7 +229,8 @@ public class RaidManager : MonoBehaviour
 
     private void Retreat()
     {
-        int maxLoss = Mathf.Max(1, survivors / 10);
+        Debug.Log("[RaidManager] Отступление: Расчёт потерь...");
+        int maxLoss = Mathf.Max(1, raidSurvivors / 10);
         int dead = Random.Range(0, maxLoss + 1);
         int wounded = Random.Range(0, maxLoss - dead + 1);
         int healed = Mathf.Min(wounded, Globals.Meds);
@@ -158,54 +239,65 @@ public class RaidManager : MonoBehaviour
         Globals.AddSurvivors(-totalLoss);
         Globals.AddMeds(-healed);
 
-        int used = Mathf.Min(Globals.Ammo, survivors * 10) - ammo;
+        int used = baseAmmoBefore - localAmmo;
         Globals.SetAmmo(Globals.Ammo - used);
 
+        Debug.Log($"[RaidManager] Потери: Погибло={dead}, Ранено={wounded - healed}, Вылечено={healed}, Всего потерь={totalLoss}");
         ShowMsg($"Отступление! Погибло: {dead}, ранено: {wounded - healed}", 4f);
         StartCoroutine(DelayedReturn(4f));
     }
 
     private IEnumerator DelayedReturn(float t)
     {
+        Debug.Log($"[RaidManager] Задержка возврата: {t} сек");
         yield return new WaitForSecondsRealtime(t);
         ReturnToBase();
     }
 
     private void ReturnToBase()
     {
-        if (SceneManager.sceneCountInBuildSettings > 0)
-        {
-            SceneManager.LoadScene(0); // BaseScene
-        }
-        else
-        {
-            Debug.LogError("Нет сцен в Build Settings!");
-        }
+        Debug.Log("[RaidManager] Возврат на базу → Загрузка BaseScene");
+        SceneManager.LoadScene("BaseScene"); // ← ТОЧНО BaseScene!
     }
 
-    // РАБОТАЕТ — ПОТОМУ ЧТО UpdateLabels() public!
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        Debug.Log($"[RaidManager] OnSceneLoaded: {scene.name} | Mode: {mode}");
         if (scene.name == "BaseScene")
         {
+            Debug.Log("[RaidManager] BaseScene загружена → BaseManager.UpdateLabels()");
             BaseManager.Instance?.UpdateLabels();
         }
     }
 
     private void ShowMsg(string text, float duration = 3f)
     {
+        Debug.Log($"[RaidManager] ShowMsg: \"{text}\" | Длительность: {duration}");
         if (messageCoroutine != null) StopCoroutine(messageCoroutine);
         messageCoroutine = StartCoroutine(MsgRoutine(text, duration));
     }
 
     private IEnumerator MsgRoutine(string text, float t)
     {
-        if (messagePanel) messagePanel.SetActive(true);
-        if (messageText) messageText.text = text;
+        if (!messagePanel)
+        {
+            Debug.LogError("[RaidManager] messagePanel = null!");
+            yield break;
+        }
+        if (!messageText)
+        {
+            Debug.LogError("[RaidManager] messageText = null!");
+            yield break;
+        }
+
+        messagePanel.SetActive(true);
+        messageText.text = text;
+        Debug.Log($"[RaidManager] Сообщение показано: {text}");
 
         yield return new WaitForSecondsRealtime(t);
 
-        if (messagePanel) messagePanel.SetActive(false);
+        messagePanel.SetActive(false);
+        Debug.Log("[RaidManager] Сообщение скрыто");
         messageCoroutine = null;
     }
 }
