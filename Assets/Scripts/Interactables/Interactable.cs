@@ -16,40 +16,38 @@ public class Interactable : MonoBehaviour
     {
         string scene = SceneManager.GetActiveScene().name;
 
-        // === БАЗА ===
+        // === ТОЛЬКО В BaseScene ===
         if (scene == "BaseScene")
         {
-            if (BaseManager.Instance != null)
+            BaseManager baseManager = FindAnyObjectByType<BaseManager>();
+            if (baseManager != null)
             {
-                BaseManager.Instance.OnItemClicked(this);
+                baseManager.OnItemClicked(this);
             }
             else
             {
-                Debug.LogWarning("BaseManager.Instance = null в BaseScene!");
+                Debug.LogError("BaseManager не найден на сцене BaseScene!");
             }
         }
-
-        // === РЕЙД ===
-        else if (scene == "Raid" && RaidManager.Instance != null)
+        // === ТОЛЬКО В Raid ===
+        else if (scene == "Raid")
         {
+            RaidManager raidManager = FindAnyObjectByType<RaidManager>();
+            if (raidManager == null)
+            {
+                Debug.LogError("RaidManager не найден на сцене Raid!");
+                return;
+            }
+
             if (itemType == BaseManager.ItemType.Zombie)
             {
-                RaidManager.Instance.OnZombieClicked(gameObject);
+                raidManager.OnZombieClicked(gameObject);
             }
             else if (itemType == BaseManager.ItemType.GoBase)
             {
-                RaidManager.Instance.OnGoBaseClicked(gameObject);
+                raidManager.OnGoBaseClicked(gameObject);
             }
-            else if (itemType == BaseManager.ItemType.Raid)
-            {
-                // ПЕРЕХОД В РЕЙД — ИЗ БАЗЫ
-                // Это НЕ должно быть в рейде!
-                // Но если объект "Raid" в рейде — игнорируем
-                if (BaseManager.Instance != null)
-                {
-                    BaseManager.Instance.OnItemClicked(this);
-                }
-            }
+            // Остальные типы в рейде игнорируются — как и задумано
         }
     }
 }
