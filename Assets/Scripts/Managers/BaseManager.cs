@@ -5,8 +5,7 @@ using System.Collections;
 
 public class BaseManager : MonoBehaviour
 {
-    // 🔽 ДОБАВЛЕН Expedition в конец списка
-    public enum ItemType { Garden, Fuel, Medical, Metal, Water, Weapon, Raid, Zombie, GoBase, Expedition }
+    public enum ItemType { Garden, Fuel, Medical, Metal, Water, Weapon, Raid, Zombie, GoBase }
 
     private const float MESSAGE_DURATION = 2.0f;
     private const float CLICK_COOLDOWN = 0.1f;
@@ -79,7 +78,7 @@ public class BaseManager : MonoBehaviour
             Globals.AddSurvivors(1);
             Globals.AddFood(-100);
             UpdateLabels();
-            Globals.Save();
+            Globals.Save(); // ← СОХРАНЕНИЕ
         }
     }
 
@@ -109,7 +108,7 @@ public class BaseManager : MonoBehaviour
                 }
                 Globals.AddFood(-5);
                 Globals.AddFuel(-3);
-                Globals.Save();
+                Globals.Save(); // ← СОХРАНЕНИЕ
                 SceneManager.LoadScene("Raid");
                 break;
 
@@ -121,24 +120,24 @@ public class BaseManager : MonoBehaviour
                 }
                 Globals.AddWater(-1);
                 Globals.AddFood(1);
-                Globals.Save();
+                Globals.Save(); // ← СОХРАНЕНИЕ
                 break;
 
             case ItemType.Fuel:
                 Globals.AddFuel(1);
-                Globals.Save();
+                Globals.Save(); // ← СОХРАНЕНИЕ
                 break;
             case ItemType.Medical:
                 Globals.AddMeds(1);
-                Globals.Save();
+                Globals.Save(); // ← СОХРАНЕНИЕ
                 break;
             case ItemType.Metal:
                 Globals.AddMetal(1);
-                Globals.Save();
+                Globals.Save(); // ← СОХРАНЕНИЕ
                 break;
             case ItemType.Water:
                 Globals.AddWater(1);
-                Globals.Save();
+                Globals.Save(); // ← СОХРАНЕНИЕ
                 break;
 
             case ItemType.Weapon:
@@ -149,12 +148,7 @@ public class BaseManager : MonoBehaviour
                 }
                 Globals.AddMetal(-1);
                 Globals.AddAmmo(1);
-                Globals.Save();
-                break;
-
-            // 🔽 НОВОЕ: переход на сцену экспедиций
-            case ItemType.Expedition:
-                SceneManager.LoadScene("ExpeditionsScene");
+                Globals.Save(); // ← СОХРАНЕНИЕ
                 break;
         }
 
